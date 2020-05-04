@@ -20,7 +20,7 @@
 # (2019-12-28) Vers.1.0 
 #   first Version 
 
-version = "1.003"
+version = "1.004"
 
 import os
 import sys
@@ -28,7 +28,6 @@ import sys
 import time
 from datetime import datetime
 
-# Required: pip install gitpython
 try:
     import dload
 
@@ -54,7 +53,9 @@ import distutils.file_util
 ############################################ Const ###########################################
 #
 #
-#
+#   
+GITNAME          = "NIOSII_EclipseCompProject"
+GIT_SCRIPT_URL   = "https://github.com/robseb/NIOSII_EclipseCompProject"
 
 GIT_FREERTOS_URL = "https://github.com/FreeRTOS/FreeRTOS-Kernel.git"
 GIT_HWLIB_URL    = "https://github.com/robseb/hwlib.git"
@@ -62,10 +63,13 @@ GIT_HWLIB_URL    = "https://github.com/robseb/hwlib.git"
 QURTUS_DEF_FOLDER       = "intelFPGA"
 QURTUS_DEF_FOLDER_LITE  = "intelFPGA_lite"
 
+
 SPLM = ['/','\\'] # Linux, Windows 
 SPno = 0
 NIOS_CMD_SHEL = ['nios2_command_shell.sh','Nios II Command Shell.bat']
 
+
+DEMO_NAME_FREERTOSC = 'freertos_c1'
 
 #
 #
@@ -74,7 +78,6 @@ NIOS_CMD_SHEL = ['nios2_command_shell.sh','Nios II Command Shell.bat']
 #
 #
 #
-
 
 # @brief to show process bar during github clone
 #
@@ -99,7 +102,7 @@ def copy_git_windows_frindy(source,temp, fileTemp,dest):
         for name in os.listdir(source):
             if  os.path.abspath(name):
                 if(not name == ".git") and (not name == ".github") and (not name == ".gitignore"):
-                    print(name)
+                    print('      '+name)
                     if(os.path.isdir(source+SPLM[SPno]+name)):
                         distutils.dir_util.copy_tree(source+SPLM[SPno]+name,temp+SPLM[SPno]+name)
                     else:
@@ -130,18 +133,15 @@ def copy_git_windows_frindy(source,temp, fileTemp,dest):
 #
 
 
-
-
 #
-#
-#
+# @brief Generate TCL script header for Software Components 
 #
 #
 def generate_tcl_file_header_package(FileName,PackageName,VersionNo,BspSubdir):
     return '#                                                                \n'+ \
            '# '+FileName+'\n'+ \
            '#                                                                \n'+ \
-           '# Auto generated TCL Script by "makeNIOS_FreeRTOS.py"  in Vers: '+str(version)+'\n'+ \
+           '# Auto generated TCL Script by "'+GITNAME+'.py"  in Vers: '+str(version)+'\n'+ \
            '# Date: '+str(datetime.now())+ '\n'+  \
            '# designed by Robin Sebastian (https://github.com/robseb) \n'+ \
            '#                                                                \n'+ \
@@ -160,15 +160,14 @@ def generate_tcl_file_header_package(FileName,PackageName,VersionNo,BspSubdir):
            '                                                                 \n'
 
 #
-#
-#
+# @brief Generate TCL script header for Operating Systems Components 
 #
 #
 def generate_tcl_file_header_os(FileName,OSName,DisplayName,VersionNo,BspSubdir):
     return '#                                                                \n'+ \
            '# '+FileName+'\n'+ \
            '#                                                                \n'+ \
-           '# Auto generated TCL Script by "makeNIOS_FreeRTOS.py"            \n'+ \
+           '# Auto generated TCL Script by "'+GITNAME+'.py"                  \n'+ \
            '# Date: '+str(datetime.now())+ '\n'+  \
            '# designed by Robin Sebastian (https://github.com/robseb) \n'+ \
            '#                                                                \n'+ \
@@ -194,9 +193,17 @@ def generate_tcl_file_header_os(FileName,OSName,DisplayName,VersionNo,BspSubdir)
            'set_sw_property isr_preemption_supported true                    \n'+ \
            '                                                                 \n'+ \
            '                                                                 \n'
+#
+# @brief Global Variable for adding the include paths to the TCL script
+#
+#
 class glob:
     TCL_Header_include_path_list = []
 
+#
+# @brief Check the in "generate_tcl_file_sources" founded file and write 
+#        them to the TCL script file
+#
 def add_files_to_list(fileName,pathRel,MainFolder):
     pathRel = pathRel.replace('\\','/')
     folderPath = pathRel[1:]
@@ -209,14 +216,14 @@ def add_files_to_list(fileName,pathRel,MainFolder):
         tcl_str= tcl_str+'add_sw_property include_source '+locFilePath+' \n' 
         if not folderPath in glob.TCL_Header_include_path_list:
             glob.TCL_Header_include_path_list.append(folderPath)
-
     elif fileName.endswith('.S'):
         tcl_str= tcl_str+'add_sw_property asm_source '+locFilePath+' \n'
         
     return tcl_str
+
 #
-#
-#
+# @brief Add the path of every available file inside a folder structure to the 
+#        TCL script file 
 #
 def generate_tcl_file_sources(folderSourceAbs,MainFolder):
     tcl_str ='\n###### \n'+ \
@@ -261,7 +268,6 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
                     folderListAbs.append(folderSourceAbs+pathsuffix+SPLM[SPno]+obj)
                 depthListAbs.append(folderListAbs)
                 
-
                 listOfProgressedFolders.append(folderSourceAbs+pathsuffix+SPLM[SPno]+curFolder)
                 pathsuffix_old = SPLM[SPno]+curFolder
                 pathsuffix = pathsuffix+ pathsuffix_old
@@ -270,7 +276,6 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
                 # Add folders to depth list
                 depthList.append(folderList)
 
-          
                 MultiJump = False
 
             elif (not len(depthList) == 0):
@@ -307,17 +312,14 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
                 del depthList[-1]
                 MultiJump = True
 
-
-
-  
             else:
                 break
 
     except Exception as ex:
         raise Exception('ERROR: Failed to read ! Msg:'+str(ex))
-    print('    ==== File prossing done ====\n')
+    print('    ==== File processing done ====\n')
 
-    print('--> Generate include folders for "'+MainFolder+'\n"')
+    print('--> Generate include folders for "'+MainFolder+'"')
 
     tcl_str=tcl_str+'\n\n'+      \
     '#                      \n'+ \
@@ -333,6 +335,53 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
     return tcl_str
 
 
+#
+#
+#
+############################################ XML Template File generation  ###########################################
+#
+#
+#
+
+#
+# @brief Generate the XML Template File for the Demo project 
+#        TCL script file 
+#
+def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
+    return     '<?xml version="1.0" encoding="UTF-8"?>      \n' +\
+               '<template_settings>                         \n' +\
+	           '    <template                               \n' +\
+		       '        	name="'+DemoName+'"             \n' +\
+		       '            description="'+DemoDesc+'"      \n' +\
+		       '            file_to_open="main.c"           \n' +\
+               '            details=" Demo project for working with FreeRTOS and Intel hwlib. \n' + \
+               '                      This project was auto generated by the Python Script "'+GITNAME+'.py" \n' +\
+               '                      (URL:'+GIT_SCRIPT_URL+'; Vers.:'+str(version)+'; Gen date:'+str(datetime.now())+') designed by Robin Sebastian\n' +\
+               '                    ">                      \n'+\
+               '    </template>                             \n'+\
+               '    <stf>                                   \n'+\
+		       '        <os_spec name="FreeRTOS">           \n'+\
+			   '            <sw_component name="Intel hwlib" id="hwlib"> \n'+\
+			   '            </sw_component>                 \n'+\
+		       '        </os_spec>                          \n'+\
+	           '  </stf>                                    \n'+\
+               '  <create-this>                             \n'+\
+		       '    <app name="'+AppName+'"                 \n'+\
+			   '         nios2-app-generate-makefile-args=" --set OBJDUMP_INCLUDE_SOURCE 1 --src-files src/main.c \n'+\
+			   '         bsp="'+BSPname+'">                 \n'+\
+		       '   </app>                                   \n'+\
+               '   <bsp name="'+BSPname+'"                  \n'+\
+			   '         type="'+TypeName+'"                \n'+\
+			   '         nios2-bsp-args="--cmd enable_sw_package hwlib">  \n'+\
+		       '  </bsp>                                    \n'+\
+               ' </create-this>                             \n'+\
+               '</template_settings>                        \n'
+
+
+
+############################################                                ############################################
+############################################             MAIN               ############################################
+############################################                                ############################################
 if __name__ == '__main__':
 
     print("\nAUTOMATIC SCRIPT FOR GENERATING A NIOS II BSP Layer")
@@ -346,8 +395,6 @@ if __name__ == '__main__':
         print("Use Python 3 for this script!")
         sys.exit()
 
-
-    
     ############################################ Find Quartus Installation Path #######################################
     
     if sys.platform =='linux':
@@ -410,10 +457,37 @@ if __name__ == '__main__':
     print('     Following Quartus Installation Folder was found:')
     print('     '+Quartus_Folder)
 
+    ############################### Check that the script runs inside the Github folder ###############################
+    excpath = os.getcwd()
+    try:
+    
+        if(len(excpath)<len(GITNAME)):
+            raise Exception()
+
+        # Find the last slash in the execution path 
+        slashpos =0
+        for str_ in excpath:
+            slashpos_pos=excpath.find(SPLM[SPno],slashpos)
+            if(slashpos_pos == -1):
+                break
+            slashpos= slashpos_pos+len(SPLM[SPno])
+
+        if(not excpath[slashpos:] == GITNAME):
+             raise Exception()
+
+        if(not os.path.isdir(os.getcwd()+SPLM[SPno]+'Demos')):
+            raise Exception()
+
+    except Exception:
+        print('ERROR: The script was not executed inside the cloned Github folder')
+        print('       Please clone this script from Github and execute the script')
+        print('       directly inside the cloned folder!')
+        print('URL: '+GIT_SCRIPT_URL)
+        sys.exit()
+
     ##############################################  Input a project name ############################################## 
 
     #projectName = input('Please input a project name:')
-
 
     projectName= "Test"
 
@@ -427,7 +501,6 @@ if __name__ == '__main__':
         os.mkdir(projectName)
         print('--> Create a new project folder')
     
-
     ################################################ Clone the latest FreeRTOS Version ###############################
 
     if(os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel")):
@@ -606,6 +679,7 @@ if __name__ == '__main__':
     with open(Quartus_componet_folder+SPLM[SPno]+'hwlib'+SPLM[SPno]+"hwlib_sw.tcl","a") as f:
         f.write(tcl_hwlib_str)
 
+    print('   Generatation of TCL component TCL script for hwlib done')
 
     # ==================================== FREERTOS TCL SCRIPT ===================================
     print('--> Generate TCL component TCL script for the FreeRTOS Kernel')
@@ -630,12 +704,52 @@ if __name__ == '__main__':
     with open(Quartus_componet_folder+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+"FreeRTOS_sw.tcl","a") as f:
         f.write(tcl_freeRTOS_str)
 
+    print('   Generatation of TCL OS TCL script for FreeRTOS done')
+
+    ################################################## Generate Demo project Files #################################################
+
+    print('--> Copy Demo files to the Quartus Example folder')
+
+
+    if(os.path.isdir(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)):
+        print('--> Remove old component folder: '+DEMO_NAME_FREERTOSC)
+        try:
+            shutil.rmtree(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)
+        except Exception as ex:
+            print('ERROR: Failed to remove the old'+DEMO_NAME_FREERTOSC+' Quartus Example folder!')
+            print('Msg: '+str(ex))
+            sys.exit()
+
+    try:
+        copy_git_windows_frindy(os.getcwd()+SPLM[SPno]+'Demos'+SPLM[SPno]+DEMO_NAME_FREERTOSC,os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+DEMO_NAME_FREERTOSC+'__'+SPLM[SPno],
+                            os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'top'+SPLM[SPno],Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)
+    except Exception as ex:
+        print('Error during Example Project folder data processing')
+        print(str(ex))
+        sys.exit()
+
+
+
+    ################################################ Generate XML Demo project File ################################################
+
+    print('--> Generate XML Demo project template File')
+
+    xml_file = generate_xml_template_file('FreeRTOS - robseb','freertos_robseb','freertos_hwlib','freertos','FreeRTOS Demo with hwlib')
+
+    # Remove the old TCL script file
+    if(os.path.isfile(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC+SPLM[SPno]+"template.xml")):
+        os.remove(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC+SPLM[SPno]+"template.xml")
+
+    with open(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC+SPLM[SPno]+"template.xml","a") as f:
+        f.write(xml_file)
+
+
+    ##################################################### Wait for user input #####################################################
+
     print('wait for input ...')
     x = input('')
 
-
-
-    ############################################ NIOSII-Commnad Shell: Execute TCL Scripts ####################################
+    ############################################ NIOS II-Commnad Shell: Execute TCL Scripts ####################################
     print('--> Open the Intel NIOS II Command Shell')
     try:
         with Popen(Quartus_Folder+QURTUS_NIOSSHELL_DIR,stdin=subprocess.PIPE) as niosCmdSH:
