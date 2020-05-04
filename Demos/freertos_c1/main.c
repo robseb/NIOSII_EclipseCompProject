@@ -106,8 +106,6 @@ error has been detected. */
 /* The parameters passed to the reg test tasks.  This is just done to check
 the parameter passing mechanism is working correctly. */
 #define mainREG_TEST_1_PARAMETER    ( ( void * ) 0x12345678 )
-#define mainREG_TEST_2_PARAMETER    ( ( void * ) 0x87654321 )
-
 /*-----------------------------------------------------------*/
 
 #ifdef __cplusplus
@@ -138,7 +136,7 @@ volatile unsigned long ulRegTest1Counter = 0UL, ulRegTest2Counter = 0UL;
 int main( void )
 {
     /* The RegTest tasks as described at the top of this file. */
-    xTaskCreate( prvFirstRegTestTask, "Rreg1", configMINIMAL_STACK_SIZE, mainREG_TEST_1_PARAMETER, mainREG_TEST_PRIORITY, NULL );
+    xTaskCreate( prvFirstRegTestTask, "Rreg1", configMINIMAL_STACK_SIZE, mainREG_TEST_1_PARAMETER, mainLED_TASK_PRIORITY, NULL );
 
     /* Finally start the scheduler. */
 	vTaskStartScheduler();

@@ -20,7 +20,7 @@
 # (2019-12-28) Vers.1.0 
 #   first Version 
 
-version = "1.004"
+version = "1.005"
 
 import os
 import sys
@@ -58,6 +58,7 @@ GIT_SCRIPT_URL   = "https://github.com/robseb/NIOSII_EclipseCompProject"
 
 GIT_FREERTOS_URL = "https://github.com/FreeRTOS/FreeRTOS-Kernel.git"
 GIT_HWLIB_URL    = "https://github.com/robseb/hwlib.git"
+
 
 QURTUS_DEF_FOLDER       = "intelFPGA"
 QURTUS_DEF_FOLDER_LITE  = "intelFPGA_lite"
@@ -228,7 +229,7 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
     tcl_str ='\n###### \n'+ \
              '# Source file listing     \n'+ \
              '###### \n'+'\n' 
-    print('--> Progress every file in folder structure "'+MainFolder+'\n"')
+    print('--> Progress every file in folder structure "'+MainFolder+'"\n')
    
     # Find every file in every folders 
     try:
@@ -333,7 +334,12 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
     glob.TCL_Header_include_path_list = []
     return tcl_str
 
-
+#
+# @brief Add the path of every available file inside a folder structure to the 
+#        TCL script file 
+#
+def generate_tcl_file_add_constBool(SysName,ValueName,Value,Description):
+    return 'add_sw_setting boolean system_h_define '+SysName+' '+ValueName+' '+str(Value)+' "'+Description+'"\n'
 #
 #
 #
@@ -492,6 +498,11 @@ if __name__ == '__main__':
     projectName= "Test"
 
     print ('Name: %s \n' % (projectName))
+
+
+    selectedTragedDevice= 1 # 1: CY5, 2: A5, 3: A10
+
+    print ('Selected Target Device: %s \n' % (selectedTragedDevice))
     
     print('Starting the generation...\n')
 
@@ -601,6 +612,31 @@ if __name__ == '__main__':
     Quartus_example_folder  = Quartus_Folder+SPLM[SPno]+'nios2eds'+SPLM[SPno]+'examples'+SPLM[SPno]+'software'
 
 
+    ############################## Copy the additional files to the FreeRTOS folder ###############################
+    if(not (os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'))):
+        print('NOTE: No additional files for FreeRTOS available!')
+    else:
+        print('--> Coy additional files to the FreeRTOS folder')
+        if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'src')):
+            print('    Copy source files')
+            try:
+                distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+"Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'src',
+                        os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel")
+            except Exception as ex:
+                print('Msg: '+str(ex))
+                print('Error: Failed to copy additional source files to FreeRTOS-Kernel')
+        if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'inc')):
+            print('    Copy include files')
+            try:
+                distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+"Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'inc',
+                        os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'include')
+            except Exception as ex:
+                print('Msg: '+str(ex))
+                print('Error: Failed to copy additional include files to FreeRTOS-Kernel')
+        
+
+
+
     ######################################### Copy to the Quartus component folder ################################
    
     # 1. Step: Copy the FreeRTOS Kernel to the component folder
@@ -667,11 +703,26 @@ if __name__ == '__main__':
         print('Msg: '+str(ex))
         sys.exit()
 
-    # 1.c: Link hwlib together with FreeRTOS
+
+
+    # 1.c: Link hwlib together with HAN and FreeRTOS and copy the code
     tcl_hwlib_str=tcl_hwlib_str+'\n\n' +\
     '# Support only FreeRTOS\n' + \
-    'add_sw_property supported_bsp_type FreeRTOS \n'
+    'add_sw_property supported_bsp_type FreeRTOS \n' +\
+    'add_sw_property supported_bsp_type HAL \n'
 
+    # 1.d: Choose the selected target device 
+    tcl_hwlib_str=tcl_hwlib_str+'\n\n' +\
+    '# \n' + \
+    '# General settings\n' + \
+    '#\n'
+
+    if(selectedTragedDevice<3):
+        tcl_hwlib_str=tcl_hwlib_str+generate_tcl_file_add_constBool('soc_cy_av','soc_cy_av',True,'Const for hwlib to select the target SoC-FPGA device')
+    elif(selectedTragedDevice==3):
+        tcl_hwlib_str=tcl_hwlib_str+generate_tcl_file_add_constBool('soc_a10','soc_a10',True,'Const for hwlib to select the target SoC-FPGA device')
+    
+    
     # Remove the old TCL script file
     if(os.path.isfile(Quartus_componet_folder+SPLM[SPno]+'hwlib'+SPLM[SPno]+"hwlib_sw.tcl")):
         os.remove(Quartus_componet_folder+SPLM[SPno]+'hwlib'+SPLM[SPno]+"hwlib_sw.tcl")
@@ -720,9 +771,6 @@ if __name__ == '__main__':
             print('Msg: '+str(ex))
             sys.exit()
 
-   
-                       
-
     try:
         distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+'Demos'+SPLM[SPno]+DEMO_NAME_FREERTOSC,Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)
     except Exception as ex:
@@ -736,7 +784,7 @@ if __name__ == '__main__':
 
     print('--> Generate XML Demo project template File')
 
-    xml_file = generate_xml_template_file('FreeRTOS - robseb','freertos_robseb','freertos_hwlib','freertos','FreeRTOS Demo with hwlib')
+    xml_file = generate_xml_template_file('FreeRTOS - robseb',DEMO_NAME_FREERTOSC,'freertos_hwlib','freertos','FreeRTOS Demo with hwlib')
 
     # Remove the old TCL script file
     if(os.path.isfile(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC+SPLM[SPno]+"template.xml")):
