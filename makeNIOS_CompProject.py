@@ -20,7 +20,7 @@
 # (2019-12-28) Vers.1.0 
 #   first Version 
 
-version = "1.005"
+version = "1.006"
 
 import os
 import sys
@@ -495,7 +495,7 @@ if __name__ == '__main__':
 
     #projectName = input('Please input a project name:')
 
-    projectName= "Test"
+    projectName= "working_folder"
 
     print ('Name: %s \n' % (projectName))
 
