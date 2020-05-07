@@ -10,14 +10,13 @@
 #
 #
 #
-# Robin Sebstian (https://github.com/robseb)
+# Robin Sebastian (https://github.com/robseb)
 #
 #
-# Python Script to automatically create a Bitbake recipe for Python PiP Packages
-# This recipe can then be used inside a meta layer for embedded Linux building with 
-# the Yocto Project
-#
-# (2019-12-28) Vers.1.0 
+# Python Script to automatically generate a Intel NIOS II Eclipse Project with FreeRTOS,
+# the Intel hwlib for the SoC-FPGAs and more
+
+# (2020-05-07) Vers.1.0 
 #   first Version 
 
 version = "1.006"
@@ -617,6 +616,7 @@ if __name__ == '__main__':
         print('NOTE: No additional files for FreeRTOS available!')
     else:
         print('--> Coy additional files to the FreeRTOS folder')
+        # Copy Source files to the main folder 
         if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'src')):
             print('    Copy source files')
             try:
@@ -625,6 +625,18 @@ if __name__ == '__main__':
             except Exception as ex:
                 print('Msg: '+str(ex))
                 print('Error: Failed to copy additional source files to FreeRTOS-Kernel')
+        # Relace the port.c file with additional/port.c file 
+        if(os.path.isfile("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'portable'+SPLM[SPno]+'port.c')
+            and os.path.isfile(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'GCC'+SPLM[SPno]+'NiosII'+SPLM[SPno]+'port.c')):
+            print('    Relace the port.c file with additional/port.c file')
+            try:
+                os.remove(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'GCC'+SPLM[SPno]+'NiosII'+SPLM[SPno]+'port.c')
+                shutil.copy2(os.getcwd()+SPLM[SPno]+"Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'portable'+SPLM[SPno]+'port.c',
+                            os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'GCC'+SPLM[SPno]+'NiosII'+SPLM[SPno]+'port.c')
+            except Exception as ex:
+                print('Msg: '+str(ex))
+                print('Error: Failed to copy additional source files to FreeRTOS-Kernel')
+        
         if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'inc')):
             print('    Copy include files')
             try:
@@ -633,8 +645,6 @@ if __name__ == '__main__':
             except Exception as ex:
                 print('Msg: '+str(ex))
                 print('Error: Failed to copy additional include files to FreeRTOS-Kernel')
-        
-
 
 
     ######################################### Copy to the Quartus component folder ################################
@@ -703,8 +713,6 @@ if __name__ == '__main__':
         print('Msg: '+str(ex))
         sys.exit()
 
-
-
     # 1.c: Link hwlib together with HAN and FreeRTOS and copy the code
     tcl_hwlib_str=tcl_hwlib_str+'\n\n' +\
     '# Support only FreeRTOS\n' + \
@@ -746,6 +754,12 @@ if __name__ == '__main__':
         print('ERROR: Failed to generate the FreeRTOS TCL script file!')
         print('Msg: '+str(ex))
         sys.exit()
+
+    # 2.c: Overdrive HAL files
+    tcl_freeRTOS_str=tcl_freeRTOS_str+'\n\n' +\
+    '# Overridden HAL files\n' + \
+    'add_sw_property excluded_hal_source  HAL/src/alt_irq_register.c \n'
+    'add_sw_property excluded_hal_source  HAL/inc/priv/alt_legacy_irq.h \n\n'
 
 
     # Remove the old TCL script file
