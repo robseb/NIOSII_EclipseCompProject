@@ -100,10 +100,10 @@
 #define configTOTAL_HEAP_SIZE                    ((size_t)15360)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_16_BIT_TICKS                   0
-#define configUSE_MUTEXES                        1
+#define configUSE_MUTEXES                        1 // must be 1 for alt_main() for the NIOS II 
 #define configQUEUE_REGISTRY_SIZE                8
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION  0 // chanched from 1
-
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION  0 // Only 0 is supported for NIOS II
+#define configUSE_RECURSIVE_MUTEXES              1 // must be 1 for alt_main() for the NIOS II 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0
 #define configMAX_CO_ROUTINE_PRIORITIES          ( 2 )

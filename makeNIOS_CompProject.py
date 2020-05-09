@@ -530,7 +530,7 @@ if __name__ == '__main__':
 
     ########################################### Check if the FreeRTOS format is okay ################################
 
-    print('--> Check if the FreeRTOS folder looks okay')
+    print('--> Check if the FreeRTOS folders looks okay')
     if(not (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable")) and (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"include"))
     and (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable"+SPLM[SPno]+"GCC"))and (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable"+SPLM[SPno]+"GCC"+SPLM[SPno]+"NiosII"))):
         print('ERROR: The downloaded FreeRTOS Folder is not in a vialed format!')
@@ -597,7 +597,7 @@ if __name__ == '__main__':
 
     ########################################### Check if the hwlib format is okay ################################
 
-    print('--> Check if the hwlib folder looks okay')
+    print('--> Check if the hwlib folders looks okay')
     if(not (os.path.isdir(projectName+SPLM[SPno]+"hwlib"))):
         print('ERROR: The downloaded hwlib Folder is not in a vialed format!')
         sys.exit()
@@ -625,6 +625,7 @@ if __name__ == '__main__':
             except Exception as ex:
                 print('Msg: '+str(ex))
                 print('Error: Failed to copy additional source files to FreeRTOS-Kernel')
+        
         # Relace the port.c file with additional/port.c file 
         if(os.path.isfile("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'portable'+SPLM[SPno]+'port.c')
             and os.path.isfile(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'GCC'+SPLM[SPno]+'NiosII'+SPLM[SPno]+'port.c')):
@@ -636,7 +637,25 @@ if __name__ == '__main__':
             except Exception as ex:
                 print('Msg: '+str(ex))
                 print('Error: Failed to copy additional source files to FreeRTOS-Kernel')
+
+        # Copy everything else to the FreeRTOS/portable/NIOS_RTOS_HAL folder
+        if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'NIOS_RTOS_HAL')):
+            try:
+                shutil.rmtree(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'NIOS_RTOS_HAL', ignore_errors=False) 
+            except Exception as ex:
+                print('Msg: '+str(ex))
+                print('Error: Failed to delate the FreeRTOS-Kernel/portable/NIOS_RTOS_HAL folder')
         
+            os.mkdir(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'NIOS_RTOS_HAL')
+              
+            try:
+                distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+"Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'NIOS_RTOS_HAL',
+                        os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'NIOS_RTOS_HAL')
+            except Exception as ex:
+                print('Msg: '+str(ex))
+                print('Error: Failed to copy additional source files to FreeRTOS-Kernel/portable folder')
+
+
         if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'inc')):
             print('    Copy include files')
             try:
@@ -758,9 +777,23 @@ if __name__ == '__main__':
     # 2.c: Overdrive HAL files
     tcl_freeRTOS_str=tcl_freeRTOS_str+'\n\n' +\
     '# Overridden HAL files\n' + \
-    'add_sw_property excluded_hal_source  HAL/src/alt_irq_register.c \n'
+    'add_sw_property excluded_hal_source  HAL/src/alt_irq_register.c \n' +\
     'add_sw_property excluded_hal_source  HAL/inc/priv/alt_legacy_irq.h \n\n'
 
+    tcl_freeRTOS_str=tcl_freeRTOS_str+ \
+    'add_sw_property excluded_hal_source HAL/src/alt_env_lock.c\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_malloc_lock.c\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_exception_entry.S\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_exception_trap.S\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_irq_entry.S\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_software_exception.S\n' +\
+    'add_sw_property excluded_hal_source HAL/inc/os/alt_hooks.h\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_exit.c\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_iic.c\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_main.c\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_tick.c\n' +\
+    'add_sw_property excluded_hal_source HAL/src/alt_irq_handler.c\n' +\
+    'add_sw_property excluded_hal_source HAL/inc/os/alt_sem.\n'
 
     # Remove the old TCL script file
     if(os.path.isfile(Quartus_componet_folder+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+"FreeRTOS_sw.tcl")):
@@ -791,7 +824,6 @@ if __name__ == '__main__':
         print('Error during Example Project folder data processing')
         print(str(ex))
         sys.exit()
-
 
 
     ################################################ Generate XML Demo project File ################################################
