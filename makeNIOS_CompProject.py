@@ -618,7 +618,7 @@ if __name__ == '__main__':
     if(os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel")):
         print('--> FreeRTOS Version is already available')
     else:
-        print('--> Cloning the latest FreeRTOS Kernel Version \n')
+        print('--> Cloning the latest FreeRTOS Kernel Version ('+GIT_FREERTOS_URL+')\n')
         print('       please wait...')
         if( dload.git_clone(GIT_FREERTOS_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]) == 'Invalid clone_dir'):
             print('ERROR: The downloaded FreeRTOS Folder is not in a vialed format!')
@@ -686,7 +686,7 @@ if __name__ == '__main__':
         if(os.path.isdir(projectName+SPLM[SPno]+"hwlib")):
             print('--> hwlib Version is already available')
         else:
-            print('--> Cloning the latest hwlib Version \n')
+            print('--> Cloning the latest hwlib Version ('+GIT_HWLIB_URL+')\n')
             print('       please wait...')
             dload.git_clone(GIT_HWLIB_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
 
