@@ -16,7 +16,7 @@ Now, are following components available:
 | Components | Description
 |:--|:--|
 | [**FreeRTOS-Kernel**](https://github.com/FreeRTOS/FreeRTOS-Kernel) *for NIOS II*    | The latest FreeRTOS Version cloned from Github  |
-| [**Intel hwlib**](https://github.com/robseb/hwlib) optimazed for NIOS II    | Library for accessing HPS components of SoC-FPGAs with NIOS II |
+| [**Intel hwlib**](https://github.com/robseb/hwlib) optimized for NIOS II    | Library for accessing HPS components of SoC-FPGAs with NIOS II |
 |  `Custom Code folders` | Inserted folders with user libraries 
 
 # Supported Platforms 
@@ -25,7 +25,8 @@ Now, are following components available:
     * **Windows 10**
     * **Ubuntu Linux**
 * **IDE**
-    * Intel Quartus Prime including NIOS II EDS
+    * **Intel Quartus Prime Lite**<!--  -->
+    * **Intel Quartus Prime Standard**
 
 * **Every Intel FPGA with NIOS II support**  
     * For running FreeRTOS is a **Timer** module required 
@@ -36,7 +37,7 @@ Now, are following components available:
     * **Intel Arria 10 SX SoC-FPGA**-family  
 
 # Getting started
-## I. Installment of Intel Quartus Prime II with NIOS II support 
+## I. Installment of Intel Quartus Prime II with NIOS II suppaort 
 The following step-by-step guide show how to install the necessary Intel Quartus Prime IDE with the Intel NIOS II Embedded Design Suite IDE for Windows and Linux (used Version for this guide: v19.1.0.670)
 
 * I.1.: **Installment of additional required components**
@@ -92,7 +93,9 @@ The following step-by-step guide show how to install the necessary Intel Quartus
         * **Download** CDT 8.8.1 which is Eclipse C/C++ IDE for Mars.2
             * [**CDT 8.8.1 for Windows**](https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-cpp-mars-2-win32-x86_64.zip)
             * [**CDT 8.8.1 for Linux**](https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz)
-            * **Alternativ Mirror:** The files are inside the [**Releases**](https://github.com/robseb/NIOSII_EclipseCompProject/releases) of this Github repository available, as well. 
+            * **Alternativ Mirror:** The files are inside the [**Releases**](https://github.com/robseb/NIOSII_EclipseCompProject/releases) of this Github repository available, as well. With this version you can copy the extract folder to
+                * **Windows 10:** "C:\intelFPGA_lite\19.1\nios2eds\bin"
+                * **Ubuntu:**  "intelFPGA_lite\19.1\nios2eds\bin"
         * **Extract** (unzip) the downloaded file
         * **Rename** the folder "*eclipse*" inside the extracted folder to "*eclipse_nios2*"
         * **Copy** the folder "*eclipse_nios2*" inside the extract folder to:
@@ -163,8 +166,268 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 
 ## VII. Example output of the Python script
 
-<h3> Work under process! </h3>
+````shell
+    C:\Users\Robin\Documents\GitHub\NIOSII_EclipseCompProject>python makeNIOS_CompProject.py
 
+    #############################################################################
+    #                                                                            #
+    #    ########   ######     ##    ##  #######   ######  ########  #######     #
+    #    ##     ## ##    ##     ##  ##  ##     ## ##    ##    ##    ##     ##    #
+    #    ##     ## ##            ####   ##     ## ##          ##    ##     ##    #
+    #    ########   ######        ##    ##     ## ##          ##    ##     ##    #
+    #    ##   ##         ##       ##    ##     ## ##          ##    ##     ##    #
+    #    ##    ##  ##    ##       ##    ##     ## ##    ##    ##    ##     ##    #
+    #    ##     ##  ######        ##     #######   ######     ##     #######     #
+    #                                                                            #
+    #       AUTOMATIC SCRIPT FOR GENERATING A ECLIPSE FOR NIOS II PROJECT        #
+    #                    WITH CUSTOM COMPONENTS,OS AND HAL,...                   #
+    #                                                                            #
+    #               by Robin Sebastian (https://github.com/robseb)               #
+    #                            Vers.: 1.007                                   #
+    #                                                                            #
+    ##############################################################################
+
+
+    --> Find the System Platform
+    --> Try to find the default Quartus installation path
+            Following Quartus Installation Folder was found:
+            C:\intelFPGA_lite\18.1
+
+    --> Check that the script runs inside the Github folder
+
+    --> Working Folder Name: working_folder
+
+
+    ##############################################################################
+    # -> Intel hwlib for using the peripheral HPS components  <- #
+    # -> of the Cyclone and Arria SoC-FPGA with the NIOS II <- #
+    #   1: Install the hwlib
+    #   2: Do not pre-install the hwlib
+    ------------------------------------------------------------------------------
+    Q,C = abort execution
+    --> Please chose with 1 or 2 = 2
+    ---->Do not pre-install the hwlib
+
+    =====================>>> Starting the generation... <<<====================
+
+    --> FreeRTOS Version is already available
+    --> Check if the FreeRTOS folders looks okay
+        looks okay
+    --> Remove support of diffrent compliers as GCC
+    --> Allow only the folder "GCC" and "MemMang" inside /FreeRTOS-Kernel/portable
+    --> Remove support of diffrent Platform as Intel NIOS II
+    --> Remove vintage Memory Management
+
+    ###############################################################################
+    #                                                                              #
+    #           OPTIONAL: ADD CUSTOM COMPONENTS TO THE PROJECT                     #
+    #                                                                              #
+    #  Add this point it is possible to generate for custom code a NIOS II Eclipse #
+    #  component to add the code to the final NIOS II Eclipse HAL project          #
+    #                                                                              #
+    #  Copy a folder with the code to the working folder                           #
+    #  for every folder will be a  NIOS II Eclipse component be generareted and    #
+    #  it will be added to the final Demo project                                  #
+    #                                                                              #
+    #  Note: The folder name will be used as component name                        #
+    ------------------------------------------------------------------------------
+    # The working folder:                                                          #
+    C:\Users\Robin\Documents\GitHub\NIOSII_EclipseCompProject\working_folder\
+    ------------------------------------------------------------------------------
+    Type anything to continue ...
+
+    --> Detect added custom folders
+        No Folders detect
+    ------------------------------------------------------------------------------
+    --> Coy additional files to the FreeRTOS folder
+    --> Relace the port.c file with additional/port.c file
+    --> Copy everything else to the FreeRTOS/portable/NIOS_RTOS_HAL folder
+        Copy include files
+
+    --> Remove old component folder: FreeRTOS
+    --> Generate FreeRTOS Kernel code file structure and
+        Copy the FreeRTOS Kernel to the Quartus Component folder
+        CONTRIBUTING.md
+        croutine.c
+        event_groups.c
+        GitHub-FreeRTOS-Kernel-Home.url
+        History.txt
+        include
+        LICENSE.md
+        list.c
+        portable
+        queue.c
+        Quick_Start_Guide.url
+        README.md
+        SECURITY.md
+        stream_buffer.c
+        tasks.c
+        timers.c
+
+    --> Generate TCL component TCL script for the FreeRTOS Kernel
+    --> Progress every file in folder structure "FreeRTOS"
+
+        Folder: include
+        Folder: portable
+        Folder: source
+        --> \source
+        File: CONTRIBUTING.md
+        File: croutine.c
+        File: event_groups.c
+        File: GitHub-FreeRTOS-Kernel-Home.url
+        File: History.txt
+        File: LICENSE.md
+        File: list.c
+        File: queue.c
+        File: Quick_Start_Guide.url
+        File: README.md
+        File: SECURITY.md
+        File: stream_buffer.c
+        File: tasks.c
+        File: timers.c
+        <--
+        Folder: include
+        Folder: portable
+        --> \portable
+        Folder: GCC
+        Folder: MemMang
+        Folder: NIOS_RTOS_HAL
+        File: readme.txt
+        --> \portable\NIOS_RTOS_HAL
+        File: alt_env_lock.c
+        File: alt_exit.c
+        File: alt_hooks.h
+        File: alt_iic.c
+        File: alt_irq_handler.c
+        File: alt_legacy_irq.h
+        File: alt_main.c
+        File: alt_malloc_lock.c
+        File: alt_sem.h
+        File: alt_sem_freertos.h
+        File: alt_tick.c
+        <-- \portable
+        Folder: GCC
+        Folder: MemMang
+        --> \portable\MemMang
+        File: heap_3.c
+        File: heap_4.c
+        File: heap_5.c
+        File: ReadMe.url
+        <-- \portable
+        Folder: GCC
+        --> \portable\GCC
+        Folder: NiosII
+        --> \portable\GCC\NiosII
+        File: port.c
+        File: portmacro.h
+        File: port_asm.S
+        <-- \portable\GCC
+        <-- \portable\GCC
+        <<<<---- \include
+        File: atomic.h
+        File: croutine.h
+        File: deprecated_definitions.h
+        File: event_groups.h
+        File: FreeRTOS.h
+        File: FreeRTOSConfig.h
+        File: list.h
+        File: message_buffer.h
+        File: mpu_prototypes.h
+        File: mpu_wrappers.h
+        File: portable.h
+        File: projdefs.h
+        File: queue.h
+        File: semphr.h
+        File: StackMacros.h
+        File: stack_macros.h
+        File: stdint.readme
+        File: stream_buffer.h
+        File: task.h
+        File: timers.h
+        <-- \include
+        <<<<---- \include
+        ==== File processing done ====
+
+    --> Generate include folders for "FreeRTOS"
+    Add include path: portable/NIOS_RTOS_HAL
+    Add include path: portable/GCC/NiosII
+    Add include path: include
+    Generatation of TCL OS TCL script for FreeRTOS done
+
+    --> Copy Demo files to the Quartus Example folder
+    --> Remove old component folder: freertos_c1
+    --> Generate XML Demo project template File
+    --> Open the Intel NIOS II Command Shell
+
+    --> Navigate to the Quartus Project Folder
+    --> Generate now Eclipse for NIOS components by executing the TCL scripts
+    ------------------------------------------------
+    Altera Nios2 Command Shell [GCC 4]
+
+    Version 18.1, Build 625
+    ------------------------------------------------
+    2020.06.03.18:07:12 Info: Doing: <b>ip-make-ipx --source-directory=. --output=components.ipx</b>
+    2020.06.03.18:07:13 Info: Using factories: CuspFactory, ImportFactory, DSPBuilderFactory, JarFactory, TclModuleFactory, BeanElementFactory, PresetFactory, QsysFactory, IPXactBlackBoxFactory, EmbeddedSwTclDriverFactory
+    2020.06.03.18:07:13 Info: (0) searching <b>C:/intelFPGA_lite/18.1/nios2eds/components/**/*</b> (command line switch)
+    2020.06.03.18:07:13 Info: Loading altera_hal/altera_hal_sw.tcl
+    2020.06.03.18:07:13 Info: Loading altera_hostfs/altera_hostfs_sw.tcl
+    2020.06.03.18:07:13 Info: Loading altera_iniche/altera_iniche_sw.tcl
+    2020.06.03.18:07:13 Info: Loading altera_nios2/altera_nios2_hal_sw.tcl
+    2020.06.03.18:07:13 Info: Loading altera_nios2/altera_nios2_qsys_hal_sw.tcl
+    2020.06.03.18:07:13 Info: Loading altera_nios2/altera_nios2_qsys_hw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2/altera_nios2_qsys_ucosiii_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2/altera_nios2_qsys_ucosii_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2/altera_nios2_ucosiii_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2/altera_nios2_ucosii_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2/nios2-wizard.jar
+    2020.06.03.18:07:14 Info: Loading altera_nios2/nios2-wizard.jar
+    2020.06.03.18:07:14 Info: Loading altera_nios2_gen2/altera_nios2_hal_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2_gen2/altera_nios2_hw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2_gen2/altera_nios2_ucosiii_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2_gen2/altera_nios2_ucosii_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_nios2_gen2/altera_nios2_unit_hw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_quad_seven_seg/altera_quad_seven_seg_sw.tcl
+    2020.06.03.18:07:14 Info: Loading altera_ro_zipfs/altera_ro_zipfs_sw.tcl
+    2020.06.03.18:07:14 Info: Loading FreeRTOS/FreeRTOS_sw.tcl
+    2020.06.03.18:07:14 Info: Loading hwlib/hwlib_sw.tcl
+    2020.06.03.18:07:14 Info: Loading micrium_uc_osii/micrium_ucosii_sw.tcl
+    2020.06.03.18:07:14 Info: <b>C:/intelFPGA_lite/18.1/nios2eds/components/**/*</b> matched 170 files in 1.36 seconds
+    2020.06.03.18:07:14 Info: Found 20 components
+
+    ################################################################################
+    #                                                                              #
+    #                        GENERATION WAS SUCCESSFUL                             #
+    # -----------------------------------------------------------------------------#
+                                    NEXT STEPS                                    #
+    #                                                                              #
+    #                     --- Open ECLIPSE for NIOS II ---                         #
+                    (C:\intelFPGA_lite\18.1\nios2eds\bin\eclipse_nios2)
+    #                                                                              #
+    #               --- Open the generated Example Project ---                     #
+    #      +  Select inside Eclipse:  File > New > NIOS II Application and BSP ... #
+    #      + Select the Temaplate: "FreeRTOS - robseb"                             #
+    #                                                                              #
+    #                 --- Use the generated NIOS II BSP  ---                       #
+    #      +  Select inside Eclipse:  File > New > NIOS II Board Support Package   #
+    #      +  Select as BSP type:  "FreeRTOS"                                      #
+    #                                                                              #
+    # -----------------------------------------------------------------------------#
+    #                                                                              #
+    #                           SUPPORT THE AUTHOR                                 #
+    #                                                                              #
+    #                            ROBIN SEBASTIAN                                   #
+    #                     (https://github.com/robseb/)                             #
+    #                                                                              #
+    #    NIOSII_EclipseCompProject and rsYocto are projects, that I have fully     #
+    #        developed on my own. No companies are involved in this projects.      #
+    #        Today I aim a Master Student of electronic engineering                #
+    #            Please support me for further development                         #
+    #                                                                              #
+    ################################################################################
+
+    C:\Users\Robin\Documents\GitHub\NIOSII_EclipseCompProject>
+    <h3> Work under process! </h3>
+````
 <br>
 <br>
 <br>

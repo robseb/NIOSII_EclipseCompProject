@@ -494,12 +494,6 @@ if __name__ == '__main__':
     print("#                            Vers.: "+version+"                                   #")
     print('#                                                                            #')
     print('##############################################################################\n\n')
-    ############################################ Runtime environment check ###########################################
-
-    # Runtime environment check
-    if sys.version_info[0] < 3:
-        print("Use Python 3 for this script!")
-        sys.exit()
 
     ############################################ Find Quartus Installation Path #######################################
     
@@ -592,6 +586,7 @@ if __name__ == '__main__':
         print('       Please clone this script from Github and execute the script')
         print('       directly inside the cloned folder!')
         print('URL: '+GIT_SCRIPT_URL)
+        print('Note: Be sure that the cloned Github folder has the name "'+GITNAME+'"')
         sys.exit()
 
     ############################################  Inputs and user selection ############################################ 
