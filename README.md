@@ -1,10 +1,8 @@
-# Concept
+# Python Script to automatically generate a Intel NIOS II Eclipse Demo Project with a custom configuration
 
 ![Alt text](doc/Concept.png?raw=true "Concept illustration")
 
 <br>
-
-**Python Script to automatically generate a Intel NIOS II Eclipse Demo Project with a custom configuration**
 
 The Python script automatically generate by the user-specified an optimized Eclipse Demo project for the Intel NIOS II Embedded Design Suite IDE.
 It should help to automate the often complicate and always equal project setup process with custom libraries and real-time operating systems, such as FreeRTOS. 
@@ -37,7 +35,14 @@ Now, are following components available:
     * **Intel Arria 10 SX SoC-FPGA**-family  
 
 # Getting started
-## I. Installment of Intel Quartus Prime II with NIOS II suppaort 
+
+## I. Installment of Intel Quartus Prime II with NIOS II support
+<br>
+<details>
+<summary><strong>Step-by-step guide</strong></summary>
+<a name="Pos1"></a>
+<br>
+
 The following step-by-step guide show how to install the necessary Intel Quartus Prime IDE with the Intel NIOS II Embedded Design Suite IDE for Windows and Linux (used Version for this guide: v19.1.0.670)
 
 * I.1.: **Installment of additional required components**
@@ -105,20 +110,26 @@ The following step-by-step guide show how to install the necessary Intel Quartus
             * **Windows 10:** C:\intelFPGA_lite\19.1\nios2eds\bin\eclipse_nios2_plugins.zip
              * **Ubuntu:** intelFPGA_lite\19.1\nios2eds\bin\eclipse_nios2_plugins.tar.gz
         * **Copy** the content of this extracted folder to the before downloaded folder 
-            * **Windows 10 :** C:\intelFPGA_lite\19.1\nios2eds\eclispe_nios2
+            * **Windows 10:** C:\intelFPGA_lite\19.1\nios2eds\eclispe_nios2
             * **Ubuntu:** intelFPGA_lite\19.1\nios2eds\bin\\eclispe_nios2
             * **Replace** the file in the folder with the new one by merging them together 
             * The folder should now look like:
                 ![Alt text](doc/Screenshoot_ContentFolder.png?raw=true "Screenshot of the folder content")
+</details>
 
 ## II. Run the script to generate a new custom Eclipse Project
 To use this script to generate a custom Eclipse project for the NIOS II sof-core processor realise follow instructions:
 * II.1.: **Clone this Github repository** 
 * II.2.: **Open the Windows Command prompt or the Linux Terminal and navigate to the repository folder**
-* II.3.: **Install the *Python Pip* module "*dload*" by running following command
-    ````shell
-    pip3 install dload
-    ````
+* II.3.: **Install a *Python Pip* module to clone Github repositories by running following command
+    * **Windows 10**
+        ````shell
+        pip3 install dload
+        ````
+    * **Ubuntu**
+        ````shell
+        pip3 install GitPython
+        ````
 * II.3.: **Execute the Python script by running following command**
     * **Windows 10**
     ````shell
@@ -129,10 +140,18 @@ To use this script to generate a custom Eclipse project for the NIOS II sof-core
     python3 makeNIOS_CompProject.py        
     ```` 
 ## III. Configure the Eclipse Example Project for your requirements 
+<br>
+<details>
+<summary><strong>Details</strong></summary>
+<a name="pos2"></a>
+<br>
 Follow the displayed instructions of the script to add the available module to your configuration. 
 Also, it is enabled to drag & drop folders with custom Code to the "*working_folder*" inside this repository folder. The script will automatically generate for every code folder a NIOS II Eclipse package. This package is pre-installed to the generate NIOS II Example Project. 
+</details>
 
 ## IV. Create a new Eclipse project with the generate example project
+<br>
+
 Follow following instructions to create a new Eclipse for NIOS II project with the previously generated example project. 
 * IV.1.:  **Start *Eclispe for NIOS II*** 
     * Select inside *Quartus Prime* *Tools/NIOS II Software Build Tools for Eclipse*
@@ -162,9 +181,26 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 <br>
 
 ## V. Compile the Eclispe project 
+<br>
+
+<details>
+<summary><strong>Step-by-Step guide</strong></summary>
+<a name="step3"></a>
+<br>
+ Coming!
+</details>
+
 ## VI. Debug the Eclipse project
 
+<details>
+<summary><strong>Step-by-Step guide</strong></summary>
+<a name="step3"></a>
+<br>
+ Coming!
+</details>
+
 ## VII. Example output of the Python script
+<br>
 
 ````shell
     C:\Users\Robin\Documents\GitHub\NIOSII_EclipseCompProject>python makeNIOS_CompProject.py

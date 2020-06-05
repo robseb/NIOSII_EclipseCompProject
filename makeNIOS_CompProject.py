@@ -19,22 +19,39 @@
 # (2020-05-10) Vers.1.0 
 #   first Version 
 
-version = "1.007"
+# (2020-06-05) Vers.1.01
+#   Fixed Linux Support with PythonGit
+
+version = "1.01"
 
 import os
 import sys
 import time
 from datetime import datetime
 
-try:
-    import dload
+if sys.platform =='linux':
+    try:
+        import git
+        from git import RemoteProgress
 
-except ImportError as ex:
-    print('Msg: '+str(ex))
-    print('This Python Application requirers "dload"')
-    print('Use following pip command to install it:')
-    print('==> pip install dload --no-cache-dir')
-    sys.exit()
+
+    except ImportError as ex:
+        print('Msg: '+str(ex))
+        print('This Python Application requirers "git"')
+        print('Use following pip command to install it:')
+        print('==> pip3 install GitPython')
+        sys.exit()
+else:
+    try:
+        import dload
+
+    except ImportError as ex:
+        print('Msg: '+str(ex))
+        print('This Python Application requirers "dload"')
+        print('Use following pip command to install it:')
+        print('==> pip3 install dload')
+        sys.exit()
+
 
 
 #rom git import RemoteProgress
@@ -96,24 +113,27 @@ class glob:
 #
 #
 
-# @brief to show process bar during github clone
-#
-#
-'''
-class CloneProgress(RemoteProgress):
-    def update(self, op_code, cur_count, max_count=None, message=''):
-        if message:
-            sys.stdout.write("\033[F")
-            print("    "+message)
-'''
+if sys.platform =='linux':
+    # @brief to show process bar during github clone
+    #
+    #
+
+    class CloneProgress(RemoteProgress):
+        def update(self, op_code, cur_count, max_count=None, message=''):
+            if message:
+                sys.stdout.write("\033[F")
+                print("    "+message)
+
 # @brief Copy cloned Github repository over an local temp folder to a final 
 #        destination to remove write restricted files 
 #
-#
 def copy_git_windows_frindy(source,temp, fileTemp,dest):
 
-    os.mkdir(fileTemp)
-    os.chmod(fileTemp, stat.S_IWRITE)
+    if sys.platform =='linux':
+        os.makedirs(fileTemp, mode=0o777, exist_ok=False)
+    else:
+        os.mkdir(fileTemp)
+        os.chmod(fileTemp, stat.S_IWRITE)
 
     try:
         for name in os.listdir(source):
@@ -122,6 +142,41 @@ def copy_git_windows_frindy(source,temp, fileTemp,dest):
                     print('      '+name)
                     if(os.path.isdir(source+SPLM[SPno]+name)):
                         distutils.dir_util.copy_tree(source+SPLM[SPno]+name,temp+SPLM[SPno]+name)
+                    else:
+                        shutil.copy2(source+SPLM[SPno]+name,fileTemp)
+    except Exception as ex:
+        raise Exception('ERROR: Failed to copy github project files to local folder! Msg:'+str(ex))
+    try:
+        
+        distutils.dir_util.copy_tree(fileTemp,temp+SPLM[SPno]+'source')
+
+        distutils.dir_util.copy_tree(temp,dest)
+    except Exception as ex:
+        raise Exception('ERROR: Failed to copy Folder to the Quartus Project! Msg:'+str(ex))
+    try:
+        if(os.path.isdir(temp)):
+            shutil.rmtree(temp, ignore_errors=False) 
+        if(os.path.isdir(fileTemp)):
+            shutil.rmtree(fileTemp, ignore_errors=False) 
+    except Exception as ex:
+        raise Exception('ERROR: Failed to remove the local temp folder! Msg: '+str(ex))
+
+# @brief Copy cloned Github repository over an local temp folder to a final 
+#        destination to remove write restricted files 
+#        --- Linux Premison frindly Version ---
+#
+def copy_git_linux_frindy(source,temp, fileTemp,dest):
+
+    os.makedirs(fileTemp, mode=0o777, exist_ok=False)
+    #os.chmod(fileTemp, stat.S_IWRITE)
+
+    try:
+        for name in os.listdir(source):
+            if  os.path.abspath(name):
+                if(not name == ".git") and (not name == ".github") and (not name == ".gitignore"):
+                    print('      '+name)
+                    if(os.path.isdir(source+SPLM[SPno]+name)):
+                        shutil.copy(source+SPLM[SPno]+name,temp+SPLM[SPno]+name)
                     else:
                         shutil.copy2(source+SPLM[SPno]+name,fileTemp)
     except Exception as ex:
@@ -494,6 +549,12 @@ if __name__ == '__main__':
     print("#                            Vers.: "+version+"                                   #")
     print('#                                                                            #')
     print('##############################################################################\n\n')
+    ############################################ Runtime environment check ###########################################
+
+    # Runtime environment check
+    if sys.version_info[0] < 3:
+        print("Use Python 3 for this script!")
+        sys.exit()
 
     ############################################ Find Quartus Installation Path #######################################
     
@@ -586,7 +647,6 @@ if __name__ == '__main__':
         print('       Please clone this script from Github and execute the script')
         print('       directly inside the cloned folder!')
         print('URL: '+GIT_SCRIPT_URL)
-        print('Note: Be sure that the cloned Github folder has the name "'+GITNAME+'"')
         sys.exit()
 
     ############################################  Inputs and user selection ############################################ 
@@ -612,14 +672,29 @@ if __name__ == '__main__':
 
     if(os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel")):
         print('--> FreeRTOS Version is already available')
+
+        if sys.platform =='linux':
+            print('       Pull it from Github')
+            g = git.cmd.Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
+            g.pull()
+        
     else:
         print('--> Cloning the latest FreeRTOS Kernel Version ('+GIT_FREERTOS_URL+')\n')
         print('       please wait...')
-        if( dload.git_clone(GIT_FREERTOS_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]) == 'Invalid clone_dir'):
-            print('ERROR: The downloaded FreeRTOS Folder is not in a vialed format!')
-            sys.exit()
-        if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master')):
-            os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
+
+        if sys.platform =='linux':
+            try:
+                git.Repo.clone_from(GIT_FREERTOS_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel', 
+                branch='master', progress=CloneProgress())
+            except Exception as ex:
+                print('ERROR: The cloneing failed! Error Msg.:'+str(ex))
+                sys.exit()
+        else:
+            if( dload.git_clone(GIT_FREERTOS_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]) == 'Invalid clone_dir'):
+                print('ERROR: The downloaded FreeRTOS Folder is not in a vialed format!')
+                sys.exit()
+            if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master')):
+                os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
     	
 
     ########################################### Check if the FreeRTOS format is okay ################################
@@ -680,13 +755,25 @@ if __name__ == '__main__':
     if glob.hwlib_selection == 1:
         if(os.path.isdir(projectName+SPLM[SPno]+"hwlib")):
             print('--> hwlib Version is already available')
+            if sys.platform =='linux':
+                print('       Pull it from Github')
+                g = git.cmd.Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
+                g.pull()
         else:
             print('--> Cloning the latest hwlib Version ('+GIT_HWLIB_URL+')\n')
             print('       please wait...')
-            dload.git_clone(GIT_HWLIB_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
+            if sys.platform =='linux':
+                try:
+                    git.Repo.clone_from(GIT_HWLIB_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib', 
+                    branch='master', progress=CloneProgress())
+                except Exception as ex:
+                    print('ERROR: The cloneing failed! Error Msg.:'+str(ex))
+                    sys.exit()
+            else:
+                dload.git_clone(GIT_HWLIB_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
 
-            if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master')):
-                os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
+                if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master')):
+                    os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
 
     ########################################### Check if the hwlib format is okay ################################
     if glob.hwlib_selection == 1:
