@@ -129,6 +129,12 @@ if sys.platform =='linux':
 #
 def copy_git_windows_frindy(source,temp, fileTemp,dest):
 
+    try:
+        if(os.path.isdir(fileTemp)):
+            shutil.rmtree(fileTemp, ignore_errors=False) 
+    except Exception as ex:
+        raise Exception('ERROR: Failed to remove old local folder! Msg: '+str(ex))
+
     if sys.platform =='linux':
         os.makedirs(fileTemp, mode=0o777, exist_ok=False)
     else:
@@ -146,10 +152,9 @@ def copy_git_windows_frindy(source,temp, fileTemp,dest):
                         shutil.copy2(source+SPLM[SPno]+name,fileTemp)
     except Exception as ex:
         raise Exception('ERROR: Failed to copy github project files to local folder! Msg:'+str(ex))
-    try:
-        
-        distutils.dir_util.copy_tree(fileTemp,temp+SPLM[SPno]+'source')
 
+    try:
+        distutils.dir_util.copy_tree(fileTemp,temp+SPLM[SPno]+'source')
         distutils.dir_util.copy_tree(temp,dest)
     except Exception as ex:
         raise Exception('ERROR: Failed to copy Folder to the Quartus Project! Msg:'+str(ex))
@@ -161,40 +166,7 @@ def copy_git_windows_frindy(source,temp, fileTemp,dest):
     except Exception as ex:
         raise Exception('ERROR: Failed to remove the local temp folder! Msg: '+str(ex))
 
-# @brief Copy cloned Github repository over an local temp folder to a final 
-#        destination to remove write restricted files 
-#        --- Linux Premison frindly Version ---
-#
-def copy_git_linux_frindy(source,temp, fileTemp,dest):
 
-    os.makedirs(fileTemp, mode=0o777, exist_ok=False)
-    #os.chmod(fileTemp, stat.S_IWRITE)
-
-    try:
-        for name in os.listdir(source):
-            if  os.path.abspath(name):
-                if(not name == ".git") and (not name == ".github") and (not name == ".gitignore"):
-                    print('      '+name)
-                    if(os.path.isdir(source+SPLM[SPno]+name)):
-                        shutil.copy(source+SPLM[SPno]+name,temp+SPLM[SPno]+name)
-                    else:
-                        shutil.copy2(source+SPLM[SPno]+name,fileTemp)
-    except Exception as ex:
-        raise Exception('ERROR: Failed to copy github project files to local folder! Msg:'+str(ex))
-    try:
-        
-        distutils.dir_util.copy_tree(fileTemp,temp+SPLM[SPno]+'source')
-
-        distutils.dir_util.copy_tree(temp,dest)
-    except Exception as ex:
-        raise Exception('ERROR: Failed to copy Folder to the Quartus Project! Msg:'+str(ex))
-    try:
-        if(os.path.isdir(temp)):
-            shutil.rmtree(temp, ignore_errors=False) 
-        if(os.path.isdir(fileTemp)):
-            shutil.rmtree(fileTemp, ignore_errors=False) 
-    except Exception as ex:
-        raise Exception('ERROR: Failed to remove the local temp folder! Msg: '+str(ex))
 
 #
 #
@@ -1138,6 +1110,7 @@ if __name__ == '__main__':
 
     ############################################ NIOS II-Commnad Shell: Execute TCL Scripts ####################################
     print('--> Open the Intel NIOS II Command Shell\n')
+    print(Quartus_Folder+QURTUS_NIOSSHELL_DIR)
     try:
         with Popen(Quartus_Folder+QURTUS_NIOSSHELL_DIR,stdin=subprocess.PIPE) as niosCmdSH:
 
