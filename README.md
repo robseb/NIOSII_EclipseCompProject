@@ -1,11 +1,24 @@
-# Python Script to automatically generate a Intel NIOS II Eclipse Demo Project with a custom configuration
+
+![GitHub](https://img.shields.io/static/v1?label=Core&message=Intel+NIOS+II&color=blue)
+![GitHub](https://img.shields.io/static/v1?label=hwlib+SoC-FPGA&message=Cyclone+V,+Arria+V,+Arria+10&color=yellowgreen)
+![GitHub](https://img.shields.io/github/license/robseb/NIOSII_EclipseCompProject)
+# Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom configuration
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 
 ![Alt text](doc/Concept.png?raw=true "Concept illustration")
 
 <br>
 
-The Python script automatically generate by the user-specified an optimized Eclipse Demo project for the Intel NIOS II Embedded Design Suite IDE.
-It should help to automate the often complicate and always equal project setup process with custom libraries and real-time operating systems, such as FreeRTOS. 
+This Python script can automate the project preparation process by generating in Eclipse Demo project with selected components. For every by the user chosen component is an TCL-script generated and it will be added to the demo project. 
+
+In the same way it is enabled to drag & drop folder with custom code to add them to the project. The often time intensive manual pre-configuration process is not necessary any more. 
+The script can for instant clone the latest Kernel of the real-time operating system “FreeRTOS” from GitHub and removes the driver for other platforms and generates TCL-scripts with all global values, sources and includes. 
+
+This script is designed to work together with the complete Intel development suite and supports every Intel FPGA device family with the support of the NIOS II soft core processor. 
+
+In the future I will add more and more components that can be selected and added to the project.
 
 # Selectable Components
 The list of selected comports, that can be automatically cloned from Github will updated. <br>
@@ -34,9 +47,15 @@ Now, are following components available:
     * **Intel Arria V SoC-FPGA**-families
     * **Intel Arria 10 SX SoC-FPGA**-family  
 
+* Tested Platforms
+    * Intel Quartus Prime Lite 19.1 Ubuntu & Windows 10 
+    * Intel Quartus Prime Lite 18.1 Ubuntu & Windows 10 
+    * Quartus Prime Standard 18.1 Windows 10
+
+
 # Getting started
 
-## I. Installment of Intel Quartus Prime II with NIOS II support
+## I. Installment of Intel Quartus Prime 19.1 with NIOS II support
 <br>
 <details>
 <summary><strong>Step-by-step guide</strong></summary>
@@ -50,9 +69,26 @@ The following step-by-step guide show how to install the necessary Intel Quartus
         * Install [**Java**](https://www.java.com/en/download/win10.jsp) for Windows 
         * Install the [**latest Python Version**](https://www.python.org/downloads/windows/) for Windows (that is required to use the script)
             * Use the **Windows x86-64 executable installer**
-            * Be sure that "Add Python 3.X to PATH" is selected during the installment
+            * Be sure that "**Add Python 3.X to PATH**" is selected during the installment
                 ![Alt text](doc/Screenshoot_PythonInstallment.png?raw=true "Screenshot of the Python installer")
         * **Restart** your Computer
+        * **Install the Windows Subsystem for Linux (WSL)**
+            * Be sure that your host computer runs Windows 10 **Build 19041** or higher
+            * Follow [*this step-by-step guide*](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to install WSL 2
+                * Enable and Install WSL with the *Windows Power Shell*
+                * Update to **WSL 2**
+                * Install a **Ubuntu Linux Distribution**
+                * Set up the distribution with a user name and password
+            * Install additional components required by the *NIOS II Command Shell*
+                *  Open the Windows Command Prompt and execute following command to start the wsl
+                    ````cmd
+                    wsl
+                    ````
+            * Install the required packages with
+                    ````cmd
+                    sudo apt-get update
+                    sudo apt-get install wsl make dos2unix
+                    ````
     * **Ubuntu**
         * Install *Python pip* by executing following Linux command
         ````shell
@@ -117,11 +153,13 @@ The following step-by-step guide show how to install the necessary Intel Quartus
                 ![Alt text](doc/Screenshoot_ContentFolder.png?raw=true "Screenshot of the folder content")
 </details>
 
+<br>
+
 ## II. Run the script to generate a new custom Eclipse Project
 To use this script to generate a custom Eclipse project for the NIOS II sof-core processor realise follow instructions:
-* II.1.: **Clone this Github repository** 
+* II.1.: **Clone this Github repository**
 * II.2.: **Open the Windows Command prompt or the Linux Terminal and navigate to the repository folder**
-* II.3.: **Install a *Python Pip* module to clone Github repositories by running following command
+* II.3.: **Install a *Python Pip* module to clone Github repositories by running following command**
     * **Windows 10**
         ````shell
         pip3 install dload
@@ -132,13 +170,14 @@ To use this script to generate a custom Eclipse project for the NIOS II sof-core
         ````
 * II.3.: **Execute the Python script by running following command**
     * **Windows 10**
-    ````shell
-    python makeNIOS_CompProject.py        
-    ```` 
+        * **Run the script as administrator to avoid permission issues by writing to C:**
+        ````shell
+        python makeNIOS_CompProject.py        
+        ```` 
     * **Ubuntu**
-    ````shell
-    python3 makeNIOS_CompProject.py        
-    ```` 
+        ````shell
+        python3 makeNIOS_CompProject.py        
+        ```` 
 ## III. Configure the Eclipse Example Project for your requirements 
 <br>
 <details>
@@ -148,11 +187,17 @@ To use this script to generate a custom Eclipse project for the NIOS II sof-core
 Follow the displayed instructions of the script to add the available module to your configuration. 
 Also, it is enabled to drag & drop folders with custom Code to the "*working_folder*" inside this repository folder. The script will automatically generate for every code folder a NIOS II Eclipse package. This package is pre-installed to the generate NIOS II Example Project. 
 </details>
+<br>
 
 ## IV. Create a new Eclipse project with the generate example project
 <br>
 
 Follow following instructions to create a new Eclipse for NIOS II project with the previously generated example project. 
+
+<details>
+<summary><strong>Start Eclipse for NIOS II</strong></summary>
+<a name="pos2"></a>
+
 * IV.1.:  **Start *Eclispe for NIOS II*** 
     * Select inside *Quartus Prime* *Tools/NIOS II Software Build Tools for Eclipse*
     * **Alternative:** Open Eclipse manually  
@@ -168,12 +213,16 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
             eclipse-nios2
             ````
 * IV.2.: **Select a Eclispe Workspace**
+</details>
+
 * IV.3.: **Create a new Eclispe project** by selecting: *File/New/Nios II Application and BSP from Template*
- ![Alt text](doc/ScreenshootEclipseConf.png?raw=true "Screenshot of the Eclipse project configuration")
+
+     ![Alt text](doc/ScreenshootEclipseConf.png?raw=true "Screenshot of the Eclipse project configuration")
  * Assign the output "*sopcinfo*" file of the Quartus Project with the Eclipse Project by specifying the *SOPC Information File name*
  * Give the Project a name
- * The by the script generate Project template is called "**FreeRTOS -robseb**". Select it.  
-  ![Alt text](doc/ScreenshootEclipseProjectGenerate.png?raw=true "Screenshot of the Eclipse project configuration")
+ * The generateD project template is called "**FreeRTOS -robseb**". Select it.  
+  
+    ![Alt text](doc/ScreenshootEclipseProjectGenerate.png?raw=true "Screenshot of the Eclipse project configuration")
 * Press **Finish** to allow Eclispe to create a new project
 <br>
 <br>
@@ -191,7 +240,7 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 </details>
 
 ## VI. Debug the Eclipse project
-
+<br>
 <details>
 <summary><strong>Step-by-Step guide</strong></summary>
 <a name="step3"></a>
@@ -463,17 +512,21 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
     C:\Users\Robin\Documents\GitHub\NIOSII_EclipseCompProject>
 ````
 
-<br>
-<br>
+
 <br>
 <br>
 
 # Author
 
-***Robin Sebastian**
+**Robin Sebastian**
 
 *NIOSII_EclipseCompProject* and *rsYocto* are projects, that I have fully developed on my own. No companies are involved in this projects.
-Today I'm a Master Student of electronic engineering with the major embedded systems. 
+Today I'm a Master Student of electronic engineering with the major embedded systems. I‘m looking for an interesting job offer to share and deepen my shown skills starting summer 2020.
 
 [![Gitter](https://badges.gitter.im/rsyocto/community.svg)](https://gitter.im/rsyocto/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Email me!](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](mailto:git@robseb.de)
+
+[![GitHub stars](https://img.shields.io/github/stars/robseb/NIOSII_EclipseCompProject?style=social)](https://GitHub.com/robseb/NIOSII_EclipseCompProject/stargazers/)
+[![GitHub watchers](https://img.shields.io/github/watchers/robseb/NIOSII_EclipseCompProject?style=social)](https://github.com/robseb/NIOSII_EclipseCompProject/watchers)
+[![GitHub followers](https://img.shields.io/github/followers/robseb?style=social)](https://github.com/robseb)
+
