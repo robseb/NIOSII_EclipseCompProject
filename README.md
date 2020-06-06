@@ -4,9 +4,6 @@
 ![GitHub](https://img.shields.io/github/license/robseb/NIOSII_EclipseCompProject)
 # Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom configuration
 
-<!-- Place this tag in your head or just before your close body tag. -->
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-
 ![Alt text](doc/Concept.png?raw=true "Concept illustration")
 
 <br>
