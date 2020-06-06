@@ -15,19 +15,23 @@
 #
 # Python Script to automatically generate a Intel NIOS II Eclipse Project with FreeRTOS,
 # the Intel hwlib for the SoC-FPGAs and more
-
+#
 # (2020-05-10) Vers.1.0 
 #   first Version 
-
+#
 # (2020-06-05) Vers.1.01
 #   Fixed Linux Support with PythonGit
+#
+# (2020-06-06) Vers.1.02
+#   Windows 10 Quartus 19.1 with WSL support
 
-version = "1.01"
+version = "1.02"
 
 import os
 import sys
 import time
 from datetime import datetime
+import io
 
 if sys.platform =='linux':
     try:
@@ -1108,34 +1112,64 @@ if __name__ == '__main__':
         f.write(xml_file)
 
 
-    ############################################ NIOS II-Commnad Shell: Execute TCL Scripts ####################################
+      ############################################ NIOS II-Commnad Shell: Execute TCL Scripts ####################################
     print('--> Open the Intel NIOS II Command Shell\n')
-    print(Quartus_Folder+QURTUS_NIOSSHELL_DIR)
-    try:
-        with Popen(Quartus_Folder+QURTUS_NIOSSHELL_DIR,stdin=subprocess.PIPE) as niosCmdSH:
 
-            # Navigate to the Quartus Project folder
+    try:
+
+        with Popen(Quartus_Folder+QURTUS_NIOSSHELL_DIR, stdout = subprocess.PIPE, stdin=subprocess.PIPE) as niosCmdSH:
+           
+            print('   Check that the NIOS II Command Shell works porterly')
+            startUpMsg =''
+            line = 'xx'
+            while not(line =='' or line=='\n'):
+                line = niosCmdSH.stdout.readline().decode("utf-8") 
+                startUpMsg = startUpMsg+line
+            
+            niosCmdSH.communicate() 
+            niosCmdSH.stdout.close()
+            # Check that the NIOS II Command Shell was open Succsessfull 
+            if not "Altera Nios2 Command Shell" in startUpMsg:
+                print('ERROR: Failed to start the NIOS II Command Shell sucessfully!')
+                sys.exit()
+            print('    looks ok')
+
+        with Popen(Quartus_Folder+QURTUS_NIOSSHELL_DIR,stdin=subprocess.PIPE) as niosCmdSH:
+            time.sleep(1)
             print('--> Navigate to the Quartus Project Folder')
+    
             if sys.platform =='linux':
                 b = bytes(' cd '+Quartus_componet_folder+"\n", 'utf-8')
             else:
-                if(quartus_standard_ver):
-                    b = bytes(' cd C:/'+QURTUS_DEF_FOLDER+'/'+str(highestVer)+'/nios2eds/components'"\n", 'utf-8')
+                if(highestVer>=19.1):
+                    if(quartus_standard_ver):
+                        b = bytes(' cd /mnt/c/'+QURTUS_DEF_FOLDER+'/'+str(highestVer)+'/nios2eds/components'"\n", 'utf-8')
+                    else:
+                        b = bytes(' cd /mnt/c/'+QURTUS_DEF_FOLDER_LITE+'/'+str(highestVer)+'/nios2eds/components'"\n", 'utf-8')
                 else:
-                    b = bytes(' cd C:/'+QURTUS_DEF_FOLDER_LITE+'/'+str(highestVer)+'/nios2eds/components'"\n", 'utf-8')
+
+                    if(quartus_standard_ver):
+                        b = bytes(' cd C:/'+QURTUS_DEF_FOLDER+'/'+str(highestVer)+'/nios2eds/components'"\n", 'utf-8')
+                    else:
+                        b = bytes(' cd C:/'+QURTUS_DEF_FOLDER_LITE+'/'+str(highestVer)+'/nios2eds/components'"\n", 'utf-8')
             niosCmdSH.stdin.write(b) 
-
-            #b = bytes('ls -la\n', 'utf-8')
-            #niosCmdSH.stdin.write(b) #expects a bytes type object
-
+            time.sleep(0.5)
+            
             print('--> Generate now Eclipse for NIOS components by executing the TCL scripts')
-            b = bytes('ip-make-ipx --source-directory=. --output=components.ipx\n', 'utf-8')
+
+            if(highestVer>=19.1 and not(sys.platform =='linux')):
+                print("   Windows 10 Version for 19.1")
+                b = bytes('ip-make-ipx.exe --source-directory=. --output=components.ipx\n', 'utf-8')
+            else:
+                b = bytes('ip-make-ipx --source-directory=. --output=components.ipx\n', 'utf-8')
+            
             niosCmdSH.stdin.write(b)
-        
             niosCmdSH.communicate()
+            
     except Exception as ex:
        print('ERROR: Failed to start the Intel NIOS II Command Shell! '+ str(ex))
        sys.exit()
+
 
     
 ############################################################ Goodby screen  ###################################################
