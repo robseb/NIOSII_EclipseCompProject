@@ -11,7 +11,7 @@
 //			----	Simple FreeRTOS Example for the NIOS II Processor ----
 //
 //	This Project with it's own HAL was automatically generate by "NIOSII_EclipseCompProject"
-// 					designed by Robin Sebastian (https://github.com/robseb)
+// 					designed by Robin Sebastian (https://github.com/robseb) (git@robseb.de)
 //
 //
 
@@ -19,16 +19,45 @@
 extern "C" {
 #endif
 
-//
-// Standard includes
-//
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
+///////////////////////////////////////////////////////////////////////////////////////////
+//				This example shows a simple implementation of a 						 //
+//			stop watch running as a FreeRTOS task and a blinking LED Task				 //
+//																					     //
+//							===== Stop watch Task =====								     //
+//				KEY1: Start and Stop the up counting of the stop watch 					 //
+//				KEY2: Reset the stop watch counting values								 //
+//				LEDS: To show the counting value in binary								 //
+// 7-Sigment Display: To show the counting value in hexadecimal   						 //
+//																						 //
+//						    ==== Blinking Task ====									     //
+//							Toggles a LED every 50ms 								     //
+//																						 //
+//							==== Required IP for FreeRTOS ===						     //
+//							--- Interval Timer Intel FPGA --- 							 //
+//								     Period:       1ms 							     	 //
+//									 Counter Size: 32 								 	 //
+//							   No Start/Stop control bit (Y)						     //
+//							          Name:   "sys_clk"									 //
+//								 Interrupt line to NIOS II 							     //
+//																						 //
+//							 ====  IP for Demo ===						     	 		 //
+//							 * for Push Buttons:										 //
+//								- PIO (Parallel I/O) Intel FPGA							 //
+//								   * Generate IRQ (Y)									 //
+//								   * IRQ Type: EDGE										 //
+//								   * Name: "pb_pio"									     //
+//								   *Interrupt line to NIOS II (higher priority)		     //
+//							 * for LEDs:												 //
+//								- PIO (Parallel I/O) Intel FPGA							 //
+//								   * Name: "led_pio"									 //
+//																						 //
+///////////////////////////////////////////////////////////////////////////////////////////
+
 
 //
 // FreeRTOS includes
 //
+#include "system.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
@@ -39,49 +68,138 @@ extern "C" {
 #include <sys/alt_irq.h>
 #include "io.h"
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///																						 //
+///								DEVELOPMENT BOARD CONFIGURATION 						 //
+///																						 //
+///////////////////////////////////////////////////////////////////////////////////////////
+
+#define TERASIC_DE0_NANO    1  // Terasic DE0  NANO Board with a Intel Cyclone IV FPGA
+#define TERASIC_DE10_STD    2  // Terasic DE10 STANDARD Board with a Intel Cyclone V SoC-FPGA
+#define TERASIC_DE10_NANO   3  // Terasic DE10 NANO Board with a Intel Cyclone V SoC-FPGA
+#define TERASIC_HAN_PILOT   4  // Terasic HAN PILOT Board with a Intel Arria 10 SoC-FPGA
+#define CUSTOM_BOARD	    0  // Custom board with a custom board configuration
+#define UNKOWN_BOARD	   -1
+
+/////
+///////////////////
+// Select your development board
+#define SELCTED_BOARD TERASIC_DE10_STD
+///////////////////
+/////
+
+#if SELCTED_BOARD == UNKOWN_BOARD
+	#error "Please select your development board!"
+#elif SELCTED_BOARD == TERASIC_DE0_NANO
+	#define BCONF_EN_SEVSIG    	     0   // Enable the 7sig Display
+	#define BCONF_EN_SEVSIG_LEN      0   // Largest displayable number on 7sig Display
+	#define BCONF_EN_LEDDISP         1   // Enable the LED bin Display
+	#define BCONF_EN_LEDDISP_LEN     7   // LED count for the bin Display
+	#define BCONF_MAX_COUNT_VALUE  126   // Max value to count for the stop watch counter
+	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
+	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
+
+	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toogle LED task
+	#define BCONF_TOOGLE_LED_NO	     8   // LED number of the toogle LED
+
+#elif SELCTED_BOARD == TERASIC_DE0_NANO
+	#define BCONF_EN_SEVSIG    	     0   // Enable the 7sig Display
+	#define BCONF_EN_SEVSIG_LEN      0   // Largest displayable number on 7sig Display
+	#define BCONF_EN_LEDDISP         1   // Enable the LED bin Display
+	#define BCONF_EN_LEDDISP_LEN     9   // LED count for the bin Display
+	#define BCONF_MAX_COUNT_VALUE  511   // Max value to count for the stop watch counter
+	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
+	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
+
+	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toogle LED task
+	#define BCONF_TOOGLE_LED_NO	     9   // LED number of the toogle LED
+
+#elif SELCTED_BOARD == TERASIC_DE10_STD
+	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
+	#define BCONF_EN_SEVSIG_LEN   65535   // Largest displayable number on 7sig Display
+	#define BCONF_EN_LEDDISP          1   // Enable the LED bin Display
+	#define BCONF_EN_LEDDISP_LEN      9   // LED count for the bin Display
+	#define BCONF_MAX_COUNT_VALUE   511   // Max value to count for the stop watch counter
+	#define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
+	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
+
+	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toogle LED task
+	#define BCONF_TOOGLE_LED_NO	      9   // LED number of the toogle LED
+#elif SELCTED_BOARD == TERASIC_HAN_PILOT
+	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
+	#define BCONF_EN_SEVSIG_LEN     255   // Largest displayable number on 7sig Display
+	#define BCONF_EN_LEDDISP          0   // Enable the LED bin Display
+	#define BCONF_EN_LEDDISP_LEN      0   // LED count for the bin Display
+	#define BCONF_MAX_COUNT_VALUE   255   // Max value to count for the stop watch counter
+	#define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
+	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
+
+	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toogle LED task
+	#define BCONF_TOOGLE_LED_NO	      0   // LED number of the toogle LED
+#elif SELCTED_BOARD == CUSTOM_BOARD
+	#define BCONF_EN_SEVSIG    	      ()   // Enable the 7sig Display
+	#define BCONF_EN_SEVSIG_LEN       ()   // Largest displayable number on 7sig Display
+	#define BCONF_EN_LEDDISP          ()   // Enable the LED bin Display
+	#define BCONF_EN_LEDDISP_LEN      ()   // LED count for the bin Display
+	#define BCONF_MAX_COUNT_VALUE     ()   // Max value to count for the stop watch counter
+	#define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
+	#define BCONF_REST_PBNO		      ()   // Number of the Reset push button
+
+	#define BCONF_EN_TOGLE_LED	      ()   // Enable the 50ms toogle LED task
+	#define BCONF_TOOGLE_LED_NO	      ()   // LED number of the toogle LED
+#endif
+
+
 //
 /*-----------------------------------------------------------*/
 // 					FreeRTOS Task definitions
 //
 
-// Priority definitions for the tasks in the demo application
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///																						 //
+///								FREERTOS TAKS DEFINITIONS		 						 //
+///																						 //
+///////////////////////////////////////////////////////////////////////////////////////////
+
 #define STOPWATCH_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 ) // Stop watch with 2 key inputs
-#define BLINKING_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 ) // Blinking LED
+#if BCONF_EN_TOGLE_LED == 1
+	#define BLINKING_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 ) // Blinking LED
+#endif
 
+///////////////////////////////////////////////////////////////////////////////////////////
+///																						 //
+///								HAL COMPONENT DEFINITIONS		 						 //
+///																						 //
+///////////////////////////////////////////////////////////////////////////////////////////
 
-//
-/*-----------------------------------------------------------*/
-// 					HAL NIOS Component definitions
-//
-
-//
-// Push Buttons (Parallel Port)
-//
-
+// Intel Parallel Port IP Register Offsets
 #define PIO_INTERUPT_MASK_REG 2*4
 #define PIO_EDGE_CAPTURE_REG 3*4
 #define PIO_DATA_REG 0
 
-#define PB_START_STOP_MASK (1<<0)
-#define PB_REST_MASK  (1<<1)
+// Push button masks
+#define PB_START_STOP_MASK 	(1<<BCONF_START_PBNO)
+#define PB_REST_MASK  		(1<<BCONF_REST_PBNO)
 
-SemaphoreHandle_t SemStartStop;
-SemaphoreHandle_t SemReset;
 
-/*
- * The register test (or RegTest) tasks as described at the top of this file.
- */
+///////////////////////////////////////////////////////////////////////////////////////////
+
+SemaphoreHandle_t SemStartStop; // Semaphore to signal Start/Stop push button was pressed
+SemaphoreHandle_t SemReset;     // Semaphore to signal the Reset push button was pressed
+
+
+// The Stop watch task function
 static void TaskStopWatch( void);
-static void TaskBlinking (void);
+
+// The toggle LED task function
+#if BCONF_EN_TOGLE_LED == 1
+	static void TaskBlinking (void);
+#endif
 
 void displayValue(uint16_t val);
 void blinkLED(void);
-
-/*-----------------------------------------------------------*/
-
-/* Counters that are incremented on each iteration of the RegTest tasks
-so long as no errors have been detected. */
-volatile unsigned long ulRegTest1Counter = 0UL, ulRegTest2Counter = 0UL;
 
 
 /*-----------------------------------------------------------*/
@@ -91,43 +209,45 @@ static void pb_exti_irq(void *context, alt_u32 id) __attribute__ ((section (".ex
  */
 int main( void )
 {
+	// Register and enable the external GPIO interrupt for the Start/Stop- and Reset buttons
 	if ( -EINVAL == alt_irq_register( (alt_u32) PB_PIO_IRQ, (alt_u32) 0x0,pb_exti_irq ) )
 	{
-		/* Failed to install the Interrupt Handler. */
+		// Register failed -> stop the debugging
 		asm( "break" );
 	}
-	else
-	{
-		/* Configure SysTick to interrupt at the requested rate. */
-		IOWR_32DIRECT(PB_PIO_BASE,PIO_INTERUPT_MASK_REG,PB_START_STOP_MASK | PB_REST_MASK);
-		IOWR_32DIRECT(PB_PIO_BASE,PIO_EDGE_CAPTURE_REG,PB_START_STOP_MASK | PB_REST_MASK);
-	}
+	// Enable the external GPIO interrupt Start/Stop- and Reset buttons
+	IOWR_32DIRECT(PB_PIO_BASE,PIO_INTERUPT_MASK_REG,PB_START_STOP_MASK | PB_REST_MASK);
+	// Enable the edge detection for Start/Stop- and Reset buttons
+	IOWR_32DIRECT(PB_PIO_BASE,PIO_EDGE_CAPTURE_REG,PB_START_STOP_MASK | PB_REST_MASK);
 
+	// Reset the Display output of the
 	displayValue(0);
 
+	// Create the Semaphores as Binary (length =1)
 	SemStartStop =xSemaphoreCreateBinary();
 	SemReset=xSemaphoreCreateBinary();
 
-    /* The RegTest tasks as described at the top of this file. */
+	// Create the Stop Watch Task with a minimal Stack size
     xTaskCreate( TaskStopWatch, "Stop Watch Task", configMINIMAL_STACK_SIZE, NULL, STOPWATCH_TASK_PRIORITY, NULL );
+
+    // Create the Toogling LED Task with a minimal Stack size
     xTaskCreate( TaskBlinking, "Blinking Task", configMINIMAL_STACK_SIZE, NULL, BLINKING_TASK_PRIORITY, NULL );
 
-    /* Finally start the scheduler. */
+    // Staret the FreeRTOS scheduler
 	vTaskStartScheduler();
     
-	/* Will only reach here if there is insufficient heap available to start
-	the scheduler. */
+	// This loop will never reached
 	for( ;; );
 }
 /*-----------------------------------------------------------*/
-void vApplicationStackOverflowHook(__unused xTaskHandle *pxTask, signed char *pcTaskName )
+void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName )
 {
-	printf("[free_rtos] Application stack overflow at task: %s\n", pcTaskName);
+	asm( "break" );
 }
 
 void vApplicationMallocFailedHook(void)
 {
-	printf("[free_rtos] Malloc Failed\n");
+	asm( "break" );
 }
 
 void _general_exception_handler( unsigned long ulCause, unsigned long ulStatus )

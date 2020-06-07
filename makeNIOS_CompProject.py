@@ -988,10 +988,9 @@ if __name__ == '__main__':
     # 2.c: Overdrive HAL files
     tcl_freeRTOS_str=tcl_freeRTOS_str+'\n\n' +\
     '# Overridden HAL files\n' + \
-    'add_sw_property excluded_hal_source  HAL/src/alt_irq_register.c \n' +\
-    'add_sw_property excluded_hal_source  HAL/inc/priv/alt_legacy_irq.h \n\n'
-
-    tcl_freeRTOS_str=tcl_freeRTOS_str+ \
+    'add_sw_property excluded_hal_source HAL/src/alt_irq_register.c \n' +\
+    'add_sw_property excluded_hal_source HAL/inc/priv/alt_legacy_irq.h \n'+\
+    'add_sw_property excluded_hal_source HAL/inc/priv/altera_avalon_timer_regs.h'+\
     'add_sw_property excluded_hal_source HAL/src/alt_env_lock.c\n' +\
     'add_sw_property excluded_hal_source HAL/src/alt_malloc_lock.c\n' +\
     'add_sw_property excluded_hal_source HAL/src/alt_exception_entry.S\n' +\

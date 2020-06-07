@@ -223,6 +223,10 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 * Press **Finish** to allow Eclispe to create a new project
 <br>
 <br>
+
+![Alt text](doc/ProjectContent.png?raw=true "Eclipse Project Folder structure")
+**Folder structure of the generated project**  
+<br>
 <br>
 <br>
 
