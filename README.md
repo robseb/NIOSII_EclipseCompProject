@@ -258,7 +258,7 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 * **Compile the project** by pressing **`Ctrl+b`** 
 
 
-## VI. Debug the Eclipse project
+## V. Debug the Eclipse project
 <details>
 <summary><strong>Step-by-Step guide</strong></summary>
 <a name="step4"></a>
@@ -285,7 +285,7 @@ In the following steps are shown how to start a debugging session on a FPGA deve
 
 </details>
 
-## VII. Example output of the Python script
+## VI. Example output of the Python script
 <details>
 <summary><strong>The output after a executon</strong></summary>
 <a name="step5"></a>
