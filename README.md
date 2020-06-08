@@ -259,7 +259,6 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 
 
 ## VI. Debug the Eclipse project
-<br>
 <details>
 <summary><strong>Step-by-Step guide</strong></summary>
 <a name="step4"></a>
@@ -273,6 +272,7 @@ In the following steps are shown how to start a debugging session on a FPGA deve
 
     ![Alt text](doc/EclipseDebugButton.png?raw=true "Eclipse Debug button")
 * The following window appears 
+
     ![Alt text](doc/EclipseDebugConfWin1.png?raw=true "Eclipse Debug configuration window")
 
 * Double-click to the list iteam "**Nios II Hardware**" to create a new debugging configuration
@@ -286,7 +286,6 @@ In the following steps are shown how to start a debugging session on a FPGA deve
 </details>
 
 ## VII. Example output of the Python script
-<br>
 <details>
 <summary><strong>The output after a executon</strong></summary>
 <a name="step5"></a>
