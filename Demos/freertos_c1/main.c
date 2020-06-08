@@ -11,10 +11,12 @@
 //			----	Simple FreeRTOS Example for the NIOS II Processor ----
 //
 //	This Project with it's own HAL was automatically generate by "NIOSII_EclipseCompProject"
-// 					designed by Robin Sebastian (https://github.com/robseb) (git@robseb.de)
+// 			designed by Robin Sebastian (https://github.com/robseb) 
+//									git@robseb.de
 //
 //
 
+// Compile as C Code
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -68,6 +70,13 @@ extern "C" {
 #include <sys/alt_irq.h>
 #include "io.h"
 
+// Application assert macro to stop the debugging progess in case of a error
+#define APP_ASSERT(x) 								\
+						if(x==0) {asm( "break" );	\
+								  while(1); }
+
+// Reference to the FreeRTOS capable function to register a interrupt service routine (port.c)
+extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, alt_u32) );
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///																						 //
@@ -84,7 +93,7 @@ extern "C" {
 
 /////
 ///////////////////
-// Select your development board
+// TODO: Select your development board
 #define SELCTED_BOARD TERASIC_DE10_STD
 ///////////////////
 /////
@@ -95,8 +104,9 @@ extern "C" {
 	#define BCONF_EN_SEVSIG    	     0   // Enable the 7sig Display
 	#define BCONF_EN_SEVSIG_LEN      0   // Largest displayable number on 7sig Display
 	#define BCONF_EN_LEDDISP         1   // Enable the LED bin Display
-	#define BCONF_EN_LEDDISP_LEN     7   // LED count for the bin Display
+	#define BCONF_EN_LEDDISP_LEN   126   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE  126   // Max value to count for the stop watch counter
+	#define BCONF_COUNT_DELAY	   100   // Delay between every stop watch count in ms
 	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
 
@@ -107,8 +117,9 @@ extern "C" {
 	#define BCONF_EN_SEVSIG    	     0   // Enable the 7sig Display
 	#define BCONF_EN_SEVSIG_LEN      0   // Largest displayable number on 7sig Display
 	#define BCONF_EN_LEDDISP         1   // Enable the LED bin Display
-	#define BCONF_EN_LEDDISP_LEN     9   // LED count for the bin Display
+	#define BCONF_EN_LEDDISP_LEN   512   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE  511   // Max value to count for the stop watch counter
+	#define BCONF_COUNT_DELAY	   100   // Delay between every stop watch count in ms
 	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
 
@@ -117,44 +128,43 @@ extern "C" {
 
 #elif SELCTED_BOARD == TERASIC_DE10_STD
 	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
-	#define BCONF_EN_SEVSIG_LEN   65535   // Largest displayable number on 7sig Display
-	#define BCONF_EN_LEDDISP          1   // Enable the LED bin Display
-	#define BCONF_EN_LEDDISP_LEN      9   // LED count for the bin Display
-	#define BCONF_MAX_COUNT_VALUE   511   // Max value to count for the stop watch counter
+	#define BCONF_EN_SEVSIG_LEN   16777215// Largest displayable number on 7sig Display
+	#define BCONF_EN_LEDDISP          0   // Enable the LED bin Display
+	#define BCONF_EN_LEDDISP_LEN    511   // Largest displayable on the LED bin Display
+	#define BCONF_MAX_COUNT_VALUE 65535   // Max value to count for the stop watch counter
+	#define BCONF_COUNT_DELAY		 10   // Delay between every stop watch count in ms
 	#define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
 
 	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toogle LED task
 	#define BCONF_TOOGLE_LED_NO	      9   // LED number of the toogle LED
+
 #elif SELCTED_BOARD == TERASIC_HAN_PILOT
 	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
 	#define BCONF_EN_SEVSIG_LEN     255   // Largest displayable number on 7sig Display
 	#define BCONF_EN_LEDDISP          0   // Enable the LED bin Display
-	#define BCONF_EN_LEDDISP_LEN      0   // LED count for the bin Display
+	#define BCONF_EN_LEDDISP_LEN      0   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE   255   // Max value to count for the stop watch counter
-	#define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
+	#define BCONF_COUNT_DELAY		100   // Delay between every stop watch count in ms
+    #define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
 
 	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toogle LED task
 	#define BCONF_TOOGLE_LED_NO	      0   // LED number of the toogle LED
+
 #elif SELCTED_BOARD == CUSTOM_BOARD
 	#define BCONF_EN_SEVSIG    	      ()   // Enable the 7sig Display
 	#define BCONF_EN_SEVSIG_LEN       ()   // Largest displayable number on 7sig Display
 	#define BCONF_EN_LEDDISP          ()   // Enable the LED bin Display
-	#define BCONF_EN_LEDDISP_LEN      ()   // LED count for the bin Display
+	#define BCONF_EN_LEDDISP_LEN      ()   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE     ()   // Max value to count for the stop watch counter
-	#define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
+	#define BCONF_COUNT_DELAY		  ()   // Delay between every stop watch count in ms
+    #define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      ()   // Number of the Reset push button
 
 	#define BCONF_EN_TOGLE_LED	      ()   // Enable the 50ms toogle LED task
 	#define BCONF_TOOGLE_LED_NO	      ()   // LED number of the toogle LED
 #endif
-
-
-//
-/*-----------------------------------------------------------*/
-// 					FreeRTOS Task definitions
-//
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +173,7 @@ extern "C" {
 ///																						 //
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#define STOPWATCH_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 ) // Stop watch with 2 key inputs
+#define STOPWATCH_TASK_PRIORITY		   ( tskIDLE_PRIORITY + 2 ) // Stop watch with 2 key inputs (higher priority)
 #if BCONF_EN_TOGLE_LED == 1
 	#define BLINKING_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 ) // Blinking LED
 #endif
@@ -198,169 +208,262 @@ static void TaskStopWatch( void);
 	static void TaskBlinking (void);
 #endif
 
-void displayValue(uint16_t val);
+
+void displayValue(uint32_t val);
 void blinkLED(void);
 
 
-/*-----------------------------------------------------------*/
+///////////////////////////////////////////////////////////////////////////////////////////
+///																						 //
+///									FreeRTOS HOOKS      		 						 //
+///																						 //
+///////////////////////////////////////////////////////////////////////////////////////////
+
+/*! \brief FreeRTOS application Stack Overflow hook handler
+ */
+void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName )
+{
+	// Triggered in case a task runs out of stack space  -> stop the debugging progress
+	APP_ASSERT(0);
+}
+
+/*! \brief FreeRTOS dynamic memory allocation hook handler
+ */
+void vApplicationMallocFailedHook(void)
+{
+	// Triggered in case dynamic memory allocation failed  -> stop the debugging progress
+	APP_ASSERT(0);
+}
+
+/*! \brief NIOS II exception handler hook handler
+ */
+void _general_exception_handler( unsigned long ulCause, unsigned long ulStatus )
+{
+	/* This overrides the definition provided by the kernel.  Other exceptions
+	should be handled here. */
+	APP_ASSERT(0);
+}
+
+// Prototype of the Interrupt handler
 static void pb_exti_irq(void *context, alt_u32 id) __attribute__ ((section (".exceptions")));
+
 /*
- * Create the demo tasks then start the scheduler.
+ * Main function
  */
 int main( void )
 {
 	// Register and enable the external GPIO interrupt for the Start/Stop- and Reset buttons
-	if ( -EINVAL == alt_irq_register( (alt_u32) PB_PIO_IRQ, (alt_u32) 0x0,pb_exti_irq ) )
-	{
-		// Register failed -> stop the debugging
-		asm( "break" );
-	}
+	APP_ASSERT(!(-EINVAL == alt_irq_register( (alt_u32) PB_PIO_IRQ, // Name of the Interrupt line
+											  (alt_u32) 0x0,        // Interrupt handler handling over -> none
+											  pb_exti_irq )));      // Reference to the interrupt service routine (ISR)
+
 	// Enable the external GPIO interrupt Start/Stop- and Reset buttons
 	IOWR_32DIRECT(PB_PIO_BASE,PIO_INTERUPT_MASK_REG,PB_START_STOP_MASK | PB_REST_MASK);
 	// Enable the edge detection for Start/Stop- and Reset buttons
 	IOWR_32DIRECT(PB_PIO_BASE,PIO_EDGE_CAPTURE_REG,PB_START_STOP_MASK | PB_REST_MASK);
 
-	// Reset the Display output of the
+	// Reset the Display output of the LED binary- and 7sigment display
 	displayValue(0);
 
-	// Create the Semaphores as Binary (length =1)
+	// Create the binary Semaphores for booth stop watch buttons (length =1)
 	SemStartStop =xSemaphoreCreateBinary();
 	SemReset=xSemaphoreCreateBinary();
 
 	// Create the Stop Watch Task with a minimal Stack size
-    xTaskCreate( TaskStopWatch, "Stop Watch Task", configMINIMAL_STACK_SIZE, NULL, STOPWATCH_TASK_PRIORITY, NULL );
+    xTaskCreate(
+    			(TaskFunction_t) TaskStopWatch, // Reference to task function
+				"Stop Watch Task",			    // Debugging ASCI name
+				configMINIMAL_STACK_SIZE,		// Stack size of task      -> minimal possible
+				(void*) NULL,                   // Handing over parameters -> none
+				STOPWATCH_TASK_PRIORITY,        // Priority of the task
+				(void*)  NULL );			 	// Reference to task handler to start,stop... task -> disabled
 
+
+#if BCONF_EN_TOGLE_LED == 1
     // Create the Toogling LED Task with a minimal Stack size
-    xTaskCreate( TaskBlinking, "Blinking Task", configMINIMAL_STACK_SIZE, NULL, BLINKING_TASK_PRIORITY, NULL );
-
+    xTaskCreate(
+    			(TaskFunction_t) TaskBlinking,  // Reference to task function
+				"Blinking Task",			    // Debugging ASCI name
+				configMINIMAL_STACK_SIZE,       // Stack size of task      -> minimal possible
+				(void*) NULL,					// Handing over parameters -> none
+				BLINKING_TASK_PRIORITY,			// Priority of the task
+				(void*) NULL );                 // Reference to task handler to start,stop... task -> disabled
+#endif
     // Staret the FreeRTOS scheduler
 	vTaskStartScheduler();
     
 	// This loop will never reached
 	for( ;; );
 }
-/*-----------------------------------------------------------*/
-void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName )
-{
-	asm( "break" );
-}
 
-void vApplicationMallocFailedHook(void)
-{
-	asm( "break" );
-}
-
-void _general_exception_handler( unsigned long ulCause, unsigned long ulStatus )
-{
-	/* This overrides the definition provided by the kernel.  Other exceptions 
-	should be handled here. */
-	for( ;; )
-    {
-		asm( "break" );
-    }
-}
-/*-----------------------------------------------------------*/
-
+/*! \brief Stop Watch Task
+ *  \note FreeRTOS Task
+ */
 static void TaskStopWatch(void )
 {
-    /* Check the parameters are passed in as expected. */
-	uint16_t countValue=0;
+	// Stop watch count value
+	uint32_t countValue=0;
 
+	// States of Stop watch
 	typedef enum{
 		RESETED=0,
 		STOPED=1,
 		RUNNING=2
 	}stopWachStatus_t;
 
+	// Create a current status value
 	stopWachStatus_t cur_status = RESETED;
 
+	// Enter infinity loop
 	for( ;; )
     {
+		// State machine for every state
 		switch(cur_status)
 		{
+		/*
+		 * --- State RESETED ---
+		 * 	Stop watch running:  NO
+		 * 	Stop watch display:  0 <Reset>
+		 *  waiting for:	   Start/Stop-Button pressed
+		 */
 		case RESETED:
+			// Reset the Display and count value
 			countValue =0;
 			displayValue(countValue);
-			// in the Reset Status wait for the Start Key
+
+			// Put task to sleep until the Start/Stop semaphore is set
+			// --> signals that the Start/Stop push button was pressed
+			// portMAX_DELAY: wait for ever (without a timeout)
 			xSemaphoreTake(SemStartStop,portMAX_DELAY);
+
+			// Start/Stop push button was pressed -> switch state to RUNNING
 			cur_status = RUNNING;
-			break;
+		/*
+		 * --- State RUNNING ---
+		 * 	Stop watch running:  YES
+		 * 	Stop watch display:  <countValue>
+		 *  waiting for:	   Start/Stop-Button pressed or counting overflow
+		 */
 		case RUNNING:
-			// Check if the Stop key was pressed
+			// Check if the Start/Stop semaphore is set
+			// -> signals that the Start/Stop push button was pressed again
+			// 0: zero wait time -> do not call the scheduler and put the task to sleep
+			// 	  instead is with immediately check if status is pdTRUE -> semaphore is set
 			if(xSemaphoreTake(SemStartStop,0)==pdTRUE)
 			{
-				// Stop the stop watch
+				// Start/Stop semaphore is set -> switch the status to STOPED
 				cur_status = STOPED;
 			}
 			else
 			{
-				// Count the stop watch up and display the value
-				displayValue(countValue++);
-				vTaskDelay((TickType_t) 100/portTICK_RATE_MS);
+				// Start/Stop semaphore is set not set
 
-				if(countValue == 512)
+				// Count the stop watch up and display the value
+				displayValue(countValue+=BCONF_COUNT_DELAY);
+
+				// Put the task for BCONF_COUNT_DELAY ms to sleep
+				// portTICK_RATE_MS -> const to convert ms to systicks
+				// here: tick rate -> 1 tick per ms -> portTICK_RATE_MS = 1
+				vTaskDelay((TickType_t) BCONF_COUNT_DELAY/portTICK_RATE_MS);
+
+				// Check if the count value reached their maximum
+				if(countValue == BCONF_MAX_COUNT_VALUE)
 				{
-					// overdflow -> go to stop
+					// Limit reached -> switch the status to STOPED
 					cur_status = STOPED;
 				}
 			}
 			break;
+		/*
+		 * --- State STOPED ---
+		 * 	Stop watch running:  NO
+		 * 	Stop watch display:  <countValue>
+		 *  waiting for:	   Reset-Button pressed
+		 */
 		case STOPED:
-			// in the Reset Status wait for the Start Key
+
+			// Put task to sleep until the Reset button semaphore is set
+			// --> signals that the Reset push button was pressed
+			// portMAX_DELAY: wait for ever (without a timeout)
 			xSemaphoreTake(SemReset,portMAX_DELAY);
+			// the Reset button semaphore is set -> switch the status to RESETED
 			cur_status = RESETED;
 			break;
 		}
     }
 }
+#if BCONF_EN_TOGLE_LED == 1
+	/*! \brief Blinking LED Task
+	 *  \note FreeRTOS Task
+	 */
+	static void TaskBlinking (void)
+	{
+		// Enter infinity loop
+		for( ;; )
+		{
+			// Toogle a LED
+			blinkLED();
 
-static void TaskBlinking (void)
+			// Put the task for 100ms to sleep
+			// portTICK_RATE_MS -> const to convert ms to systicks
+			// here: tick rate -> 1 tick per ms -> portTICK_RATE_MS = 1
+			vTaskDelay((TickType_t) 100/portTICK_RATE_MS);
+		}
+	}
+#endif
+
+/*! \brief Display a Value on the 7sig-Display and as LED binary
+ *  \param val the value to display
+ */
+void displayValue(uint32_t val)
 {
-	for( ;; )
-    {
-		blinkLED();
-		vTaskDelay((TickType_t) 50/portTICK_RATE_MS);
-    }
-
+#if BCONF_EN_SEVSIG == 1
+	// Write the value to the 7sigment display
+	IOWR_32DIRECT(DE10STD7SIG_BASE,0,val< BCONF_EN_SEVSIG_LEN ? val: BCONF_EN_SEVSIG_LEN);
+#endif
+#if BCONF_EN_LEDDISP == 1
+	// Write the value to the binary LED display
+	IOWR_32DIRECT(LED_PIO_BASE,0,val< BCONF_EN_LEDDISP_LEN ? val :BCONF_EN_LEDDISP_LEN);
+#endif
 }
 
-void displayValue(uint16_t val)
-{
-	IOWR_32DIRECT(DE10STD7SIG_BASE,0,val);
-	IOWR_32DIRECT(LED_PIO_BASE,0,val);
-}
+#if BCONF_EN_TOGLE_LED == 1
+	/*! \brief Toogle a LED
+	 */
+	void blinkLED(void)
+	{
+		static uint8_t blink =1;
+		blink = !blink;
+		uint32_t led = IORD_32DIRECT(LED_PIO_BASE,0);
+		IOWR_32DIRECT(LED_PIO_BASE,0,blink ? led| (1<<BCONF_TOOGLE_LED_NO): led& ~(1<<BCONF_TOOGLE_LED_NO));
+	}
+#endif
 
-void blinkLED(void)
-{
-	static uint8_t blink =1;
-	blink = !blink;
-	uint32_t led = IORD_32DIRECT(LED_PIO_BASE,0);
-	IOWR_32DIRECT(LED_PIO_BASE,0,blink ? led| (1<<9): led& ~(1<<9));
-}
-
+/*! \brief external (EXTI) push button interrupt handler
+ *  \note: Interrupt service routine (ISR)
+ */
 static void pb_exti_irq(void *context, alt_u32 id)
 {
 	// Check witch key was pressed
 	uint32_t key = (~IORD_32DIRECT(PB_PIO_BASE,PIO_DATA_REG)) & (PB_START_STOP_MASK | PB_REST_MASK);
 	if( key== 1)
 	{
-		// The Start/Stop key was pressed
+		// The Start/Stop key was pressed -> load the semaphore
 		xSemaphoreGiveFromISR(SemStartStop,NULL);
-		// take other Semaphore to avoid multi input
+		// take other Semaphore to avoid multiple push button input
 		xSemaphoreTakeFromISR(SemReset,NULL);
 	}
 	else if( key== 2)
 	{
 		// The Reset key was pressed
 		xSemaphoreGiveFromISR(SemReset,NULL);
-		// take other Semaphore to avoid multi input
+		// take other Semaphore to avoid multiple push button input
 		xSemaphoreTakeFromISR(SemStartStop,NULL);
 	}
 
 	// Clear the Timer ISR Flag
-	IOWR_32DIRECT(PB_PIO_BASE,PIO_INTERUPT_MASK_REG,PB_START_STOP_MASK | PB_REST_MASK);
-	IOWR_32DIRECT(PB_PIO_BASE,PIO_EDGE_CAPTURE_REG,PB_START_STOP_MASK | PB_REST_MASK);
 
+	// Enable the external GPIO interrupt Start/Stop- and Reset buttons
 	IOWR_32DIRECT(PB_PIO_BASE,PIO_INTERUPT_MASK_REG,PB_START_STOP_MASK | PB_REST_MASK);
 	IOWR_32DIRECT(PB_PIO_BASE,PIO_EDGE_CAPTURE_REG,PB_START_STOP_MASK | PB_REST_MASK);
 }
