@@ -2,7 +2,7 @@
 ![GitHub](https://img.shields.io/static/v1?label=Core&message=Intel+NIOS+II&color=blue)
 ![GitHub](https://img.shields.io/static/v1?label=hwlib+SoC-FPGA&message=Cyclone+V,+Arria+V,+Arria+10&color=yellowgreen)
 ![GitHub](https://img.shields.io/github/license/robseb/NIOSII_EclipseCompProject)
-# Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom configuration
+# Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom software components (e.g. FreeRTOS, ...)
 
 ![Alt text](doc/Concept.png?raw=true "Concept illustration")
 
@@ -258,17 +258,17 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
     * Alternatively it is enabled to use a custom board
         ````c
         #elif SELCTED_BOARD == CUSTOM_BOARD
-        	#define BCONF_EN_SEVSIG    	      ()   // Enable the 7sig Display
+        	#define BCONF_EN_SEVSIG    	    ()   // Enable the 7sig Display
         	#define BCONF_EN_SEVSIG_LEN       ()   // Largest displayable number on 7sig Display
         	#define BCONF_EN_LEDDISP          ()   // Enable the LED bin Display
         	#define BCONF_EN_LEDDISP_LEN      ()   // Largest displayable on the LED bin Display
         	#define BCONF_MAX_COUNT_VALUE     ()   // Max value to count for the stop watch counter
-        	#define BCONF_COUNT_DELAY		  ()   // Delay between every stop watch count in ms
-            #define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
-        	#define BCONF_REST_PBNO		      ()   // Number of the Reset push button
+        	#define BCONF_COUNT_DELAY		    ()   // Delay between every stop watch count in ms
+         #define BCONF_START_PBNO		    ()   // Number of the Start/Stop push button
+        	#define BCONF_REST_PBNO		       ()   // Number of the Reset push button
         
-        	#define BCONF_EN_TOGLE_LED	      ()   // Enable the 50ms toogle LED task
-        	#define BCONF_TOOGLE_LED_NO	      ()   // LED number of the toogle LED
+        	#define BCONF_EN_TOGLE_LED	       ()   // Enable the 50ms toogle LED task
+        	#define BCONF_TOOGLE_LED_NO	    ()   // LED number of the toogle LED
         #endif
         ````
 * **Compile the project** by pressing **`Ctrl+b`** 
