@@ -2,7 +2,7 @@
 ![GitHub](https://img.shields.io/static/v1?label=Core&message=Intel+NIOS+II&color=blue)
 ![GitHub](https://img.shields.io/static/v1?label=hwlib+SoC-FPGA&message=Cyclone+V,+Arria+V,+Arria+10&color=yellowgreen)
 ![GitHub](https://img.shields.io/github/license/robseb/NIOSII_EclipseCompProject)
-# Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom software components (e.g. FreeRTOS, ...)
+# Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom software components (e.g. FreeRTOS)
 
 ![Alt text](doc/Concept.png?raw=true "Concept illustration")
 
