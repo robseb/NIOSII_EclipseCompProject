@@ -8,14 +8,20 @@
 
 <br>
 
-This Python script can automate the project preparation process by generating in Eclipse Demo project with selected components. For every by the user chosen component is an TCL-script generated and it will be added to the demo project. 
+**This Python script can automate the project preparation process by generating in Eclipse Demo project with selected components. For every by the user chosen component is an TCL-script generated and it will be added to the demo project.**
 
 In the same way it is enabled to drag & drop folder with custom code to add them to the project. The often time intensive manual pre-configuration process is not necessary any more. 
-The script can for instant clone the latest Kernel of the real-time operating system “FreeRTOS” from GitHub and removes the driver for other platforms and generates TCL-scripts with all global values, sources and includes. 
+The script can for instant clone the latest Kernel of the real-time operating system “*FreeRTOS*” from *GitHub* and removes the driver for other platforms and generates TCL-scripts with all global values, sources and includes. 
 
 This script is designed to work together with the complete Intel development suite and supports every Intel FPGA device family with the support of the NIOS II soft core processor. 
 
 In the future I will add more and more components that can be selected and added to the project.
+
+___
+
+![Alt text](doc/EclipseDebugFreeRTOS.png?raw=true "Sceeenshoot Debugging FreeRTOS")
+**Screenshot of a Eclipse Debugging sesion of a automaticly generated project with FreeRTOS**
+
 
 # Selectable Components
 The list of selected comports, that can be automatically cloned from Github will updated. <br>
@@ -39,7 +45,7 @@ Now, are following components available:
 * **Every Intel FPGA with NIOS II support**  
     * For running FreeRTOS is a **Timer** module required 
 
-* Supported SoC-FPGA of the Intel *hwlib* for accessing HPS hard-IP with the NIOS II core
+* Supported SoC-FPGA of the Intel *hwlib* for accessing *HPS* hard-IP with the *NIOS II* core
     * **Intel Cyclone V SoC-FPGA**-families 
     * **Intel Arria V SoC-FPGA**-families
     * **Intel Arria 10 SX SoC-FPGA**-family  
@@ -81,7 +87,7 @@ The following step-by-step guide show how to install the necessary Intel Quartus
                     ````cmd
                     wsl
                     ````
-            * Install the required packages with
+                * Install the required packages with
                     ````cmd
                     sudo apt-get update
                     sudo apt-get install wsl make dos2unix
@@ -181,8 +187,9 @@ To use this script to generate a custom Eclipse project for the NIOS II sof-core
 <summary><strong>Details</strong></summary>
 <a name="pos2"></a>
 <br>
+
 Follow the displayed instructions of the script to add the available module to your configuration. 
-Also, it is enabled to drag & drop folders with custom Code to the "*working_folder*" inside this repository folder. The script will automatically generate for every code folder a NIOS II Eclipse package. This package is pre-installed to the generate NIOS II Example Project. 
+Also, it is enabled to drag & drop folders with custom Code to the *"working_folder"* inside this repository folder. The script will automatically generate for every code folder a NIOS II Eclipse package. This package is pre-installed to the generate NIOS II Example Project. 
 </details>
 <br>
 
@@ -212,7 +219,7 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
 * IV.2.: **Select a Eclispe Workspace**
 </details>
 
-* IV.3.: **Create a new Eclispe project** by selecting: *File/New/Nios II Application and BSP from Template*
+* IV.3.: **Create a new Eclipse project** by selecting: *File/New/Nios II Application and BSP from Template*
 
      ![Alt text](doc/ScreenshootEclipseConf.png?raw=true "Screenshot of the Eclipse project configuration")
  * Assign the output "*sopcinfo*" file of the Quartus Project with the Eclipse Project by specifying the *SOPC Information File name*
@@ -221,36 +228,84 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
   
     ![Alt text](doc/ScreenshootEclipseProjectGenerate.png?raw=true "Screenshot of the Eclipse project configuration")
 * Press **Finish** to allow Eclispe to create a new project
-<br>
-<br>
 
-![Alt text](doc/ProjectContent.png?raw=true "Eclipse Project Folder structure")
+* Open the demo application c-file "**main.c**" from the application part of the Eclipse project
+
 **Folder structure of the generated project**  
-<br>
-<br>
+    ![Alt text](doc/ProjectContent.png?raw=true "Eclipse Project Folder structure")
+
+**Screenshot of Eclipse with the open auto generated FreeRTOS project**
+    ![Alt text](doc/EclipseSceenshoot.png?raw=true "Screenshot of Eclipse")
 <br>
 
-## V. Compile the Eclispe project 
-<br>
+* **Select your FPGA board for the Demo**
+    * The pre-installed demo contains a simple stop watch written as FreeRTOS task
+    * Choice your FPGA development board for this demo due to specifying "*SELCTED_BOARD*" in "*main.c*"
+        ````c
+        #define TERASIC_DE0_NANO    1  // Terasic DE0  NANO Board with a Intel Cyclone IV FPGA
+        #define TERASIC_DE10_STD    2  // Terasic DE10 STANDARD Board with a Intel Cyclone V SoC-FPGA
+        #define TERASIC_DE10_NANO   3  // Terasic DE10 NANO Board with a Intel Cyclone V SoC-FPGA
+        #define TERASIC_HAN_PILOT   4  // Terasic HAN PILOT Board with a Intel Arria 10 SoC-FPGA
+        #define CUSTOM_BOARD	    0  // Custom board with a custom board configuration
+        #define UNKOWN_BOARD	   -1
+        /////
+        ///////////////////
+        // TODO: Select your development board
+        #define SELCTED_BOARD TERASIC_DE10_STD
+        ///////////////////
+        /////
+        ````
+    * Alternatively it is enabled to use a custom board
+        ````c
+        #elif SELCTED_BOARD == CUSTOM_BOARD
+        	#define BCONF_EN_SEVSIG    	      ()   // Enable the 7sig Display
+        	#define BCONF_EN_SEVSIG_LEN       ()   // Largest displayable number on 7sig Display
+        	#define BCONF_EN_LEDDISP          ()   // Enable the LED bin Display
+        	#define BCONF_EN_LEDDISP_LEN      ()   // Largest displayable on the LED bin Display
+        	#define BCONF_MAX_COUNT_VALUE     ()   // Max value to count for the stop watch counter
+        	#define BCONF_COUNT_DELAY		  ()   // Delay between every stop watch count in ms
+            #define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
+        	#define BCONF_REST_PBNO		      ()   // Number of the Reset push button
+        
+        	#define BCONF_EN_TOGLE_LED	      ()   // Enable the 50ms toogle LED task
+        	#define BCONF_TOOGLE_LED_NO	      ()   // LED number of the toogle LED
+        #endif
+        ````
+* **Compile the project** by pressing **`Ctrl+b`** 
 
-<details>
-<summary><strong>Step-by-Step guide</strong></summary>
-<a name="step3"></a>
-<br>
- Coming!
-</details>
 
 ## VI. Debug the Eclipse project
 <br>
 <details>
 <summary><strong>Step-by-Step guide</strong></summary>
-<a name="step3"></a>
+<a name="step4"></a>
 <br>
- Coming!
+
+After the project build was successful the project can be debugged on the development board. 
+For this task it is necessary to configure the FPGA with a proper FPGA configuration with a NIOS II soft-core processor.
+In the following steps are shown how to start a debugging session on a FPGA development board with a proper FPGA configuration and the Intel USB FPGA Blaster (available on *Teraisc* FPGA boards).   
+
+* Select the debug icon (*bug*) and choose "*Debug Configurations...*" on the Eclipse toolbar
+
+    ![Alt text](doc/EclipseDebugButton.png?raw=true "Eclipse Debug button")
+* The following window appears 
+    ![Alt text](doc/EclipseDebugConfWin1.png?raw=true "Eclipse Debug configuration window")
+
+* Double-click to the list iteam "**Nios II Hardware**" to create a new debugging configuration
+* Inside the debugging configuration select the **Project name** of your previously created project
+    ![Alt text](doc/EclipseDebugConfWin2.png?raw=true "Eclipse Debug configuration window - project selection")
+* Check on the tap "**Debugger**" that Eclipse could find the FPGA Blaster of your board
+      ![Alt text](doc/EclipseDebugConfWin3.png?raw=true "Eclipse Debug configuration window - Debugger")
+*  Start the debugging session by pressing the "**Apply**"- and "**Debug**"-Button
+* Now should start the debugging process as shown in screenshot above
+
 </details>
 
 ## VII. Example output of the Python script
 <br>
+<details>
+<summary><strong>The output after a executon</strong></summary>
+<a name="step5"></a>
 
 ````shell
  C:\Users\robseb\Documents\GitHub\NIOSII_EclipseCompProject>python makeNIOS_CompProject.py
@@ -938,10 +993,13 @@ Version 19.1, Build 670
 
 C:\Users\robseb\Documents\GitHub\NIOSII_EclipseCompProject>
 ````
-
+</details>
 
 <br>
 <br>
+
+___
+
 
 # Author
 
