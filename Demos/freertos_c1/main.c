@@ -94,7 +94,7 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 /////
 ///////////////////
 // TODO: Select your development board
-#define SELCTED_BOARD TERASIC_DE10_STD
+#define SELCTED_BOARD UNKOWN_BOARD
 ///////////////////
 /////
 
