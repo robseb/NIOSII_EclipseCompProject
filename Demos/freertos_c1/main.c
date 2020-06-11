@@ -70,12 +70,12 @@ extern "C" {
 #include <sys/alt_irq.h>
 #include "io.h"
 
-// Application assert macro to stop the debugging progess in case of a error
+// Application assert macro to stop the debugging process in case of an error
 #define APP_ASSERT(x) 								\
 						if(x==0) {asm( "break" );	\
 								  while(1); }
 
-// Reference to the FreeRTOS capable function to register a interrupt service routine (port.c)
+// Reference to the FreeRTOS capable function to register an interrupt service routine (port.c)
 extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, alt_u32) );
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -84,10 +84,10 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 ///																						 //
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#define TERASIC_DE0_NANO    1  // Terasic DE0  NANO Board with a Intel Cyclone IV FPGA
-#define TERASIC_DE10_STD    2  // Terasic DE10 STANDARD Board with a Intel Cyclone V SoC-FPGA
-#define TERASIC_DE10_NANO   3  // Terasic DE10 NANO Board with a Intel Cyclone V SoC-FPGA
-#define TERASIC_HAN_PILOT   4  // Terasic HAN PILOT Board with a Intel Arria 10 SoC-FPGA
+#define TERASIC_DE0_NANO    1  // Terasic DE0  NANO Board with an Intel Cyclone IV FPGA
+#define TERASIC_DE10_STD    2  // Terasic DE10 STANDARD Board with an Intel Cyclone V SoC-FPGA
+#define TERASIC_DE10_NANO   3  // Terasic DE10 NANO Board with an Intel Cyclone V SoC-FPGA
+#define TERASIC_HAN_PILOT   4  // Terasic HAN PILOT Board with an Intel Arria 10 SoC-FPGA
 #define CUSTOM_BOARD	    0  // Custom board with a custom board configuration
 #define UNKOWN_BOARD	   -1
 
@@ -110,8 +110,8 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
 
-	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toogle LED task
-	#define BCONF_TOOGLE_LED_NO	     8   // LED number of the toogle LED
+	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toggle LED task
+	#define BCONF_TOOGLE_LED_NO	     8   // LED number of the toggle LED
 
 #elif SELCTED_BOARD == TERASIC_DE0_NANO
 	#define BCONF_EN_SEVSIG    	     0   // Enable the 7sig Display
@@ -123,8 +123,8 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
 
-	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toogle LED task
-	#define BCONF_TOOGLE_LED_NO	     9   // LED number of the toogle LED
+	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toggle LED task
+	#define BCONF_TOOGLE_LED_NO	     9   // LED number of the toggle LED
 
 #elif SELCTED_BOARD == TERASIC_DE10_STD
 	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
@@ -136,8 +136,8 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
 
-	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toogle LED task
-	#define BCONF_TOOGLE_LED_NO	      9   // LED number of the toogle LED
+	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toggle LED task
+	#define BCONF_TOOGLE_LED_NO	      9   // LED number of the toggle LED
 
 #elif SELCTED_BOARD == TERASIC_HAN_PILOT
 	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
@@ -149,8 +149,8 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
     #define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
 
-	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toogle LED task
-	#define BCONF_TOOGLE_LED_NO	      0   // LED number of the toogle LED
+	#define BCONF_EN_TOGLE_LED	      1   // Enable the 50ms toggle LED task
+	#define BCONF_TOOGLE_LED_NO	      0   // LED number of the toggle LED
 
 #elif SELCTED_BOARD == CUSTOM_BOARD
 	#define BCONF_EN_SEVSIG    	      ()   // Enable the 7sig Display
@@ -162,14 +162,14 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
     #define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      ()   // Number of the Reset push button
 
-	#define BCONF_EN_TOGLE_LED	      ()   // Enable the 50ms toogle LED task
-	#define BCONF_TOOGLE_LED_NO	      ()   // LED number of the toogle LED
+	#define BCONF_EN_TOGLE_LED	      ()   // Enable the 50ms toggle LED task
+	#define BCONF_TOOGLE_LED_NO	      ()   // LED number of the toggle LED
 #endif
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///																						 //
-///								FREERTOS TAKS DEFINITIONS		 						 //
+///								FREERTOS TASKS DEFINITIONS		 						 //
 ///																						 //
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -239,8 +239,8 @@ void vApplicationMallocFailedHook(void)
  */
 void _general_exception_handler( unsigned long ulCause, unsigned long ulStatus )
 {
-	/* This overrides the definition provided by the kernel.  Other exceptions
-	should be handled here. */
+	// This overrides the definition provided by the kernel. Other exceptions
+	// should be handled here.
 	APP_ASSERT(0);
 }
 
@@ -262,10 +262,10 @@ int main( void )
 	// Enable the edge detection for Start/Stop- and Reset buttons
 	IOWR_32DIRECT(PB_PIO_BASE,PIO_EDGE_CAPTURE_REG,PB_START_STOP_MASK | PB_REST_MASK);
 
-	// Reset the Display output of the LED binary- and 7sigment display
+	// Reset the Display output of the LED binary- and 7segment display
 	displayValue(0);
 
-	// Create the binary Semaphores for booth stop watch buttons (length =1)
+	// Create the binary Semaphores for both stop watch buttons (length =1)
 	SemStartStop =xSemaphoreCreateBinary();
 	SemReset=xSemaphoreCreateBinary();
 
@@ -280,7 +280,7 @@ int main( void )
 
 
 #if BCONF_EN_TOGLE_LED == 1
-    // Create the Toogling LED Task with a minimal Stack size
+    // Create the Toggling LED Task with a minimal Stack size
     xTaskCreate(
     			(TaskFunction_t) TaskBlinking,  // Reference to task function
 				"Blinking Task",			    // Debugging ASCI name
@@ -289,7 +289,7 @@ int main( void )
 				BLINKING_TASK_PRIORITY,			// Priority of the task
 				(void*) NULL );                 // Reference to task handler to start,stop... task -> disabled
 #endif
-    // Staret the FreeRTOS scheduler
+    // Start the FreeRTOS scheduler
 	vTaskStartScheduler();
     
 	// This loop will never reached
@@ -348,7 +348,7 @@ static void TaskStopWatch(void )
 			// Check if the Start/Stop semaphore is set
 			// -> signals that the Start/Stop push button was pressed again
 			// 0: zero wait time -> do not call the scheduler and put the task to sleep
-			// 	  instead is with immediately check if status is pdTRUE -> semaphore is set
+			// 	  instead is immediately check if the status is pdTRUE -> semaphore is set
 			if(xSemaphoreTake(SemStartStop,0)==pdTRUE)
 			{
 				// Start/Stop semaphore is set -> switch the status to STOPED
@@ -356,7 +356,7 @@ static void TaskStopWatch(void )
 			}
 			else
 			{
-				// Start/Stop semaphore is set not set
+				// Start/Stop semaphore is not set
 
 				// Count the stop watch up and display the value
 				displayValue(countValue+=BCONF_COUNT_DELAY);
@@ -366,7 +366,7 @@ static void TaskStopWatch(void )
 				// here: tick rate -> 1 tick per ms -> portTICK_RATE_MS = 1
 				vTaskDelay((TickType_t) BCONF_COUNT_DELAY/portTICK_RATE_MS);
 
-				// Check if the count value reached their maximum
+				// Check if the count value reached its maximum
 				if(countValue == BCONF_MAX_COUNT_VALUE)
 				{
 					// Limit reached -> switch the status to STOPED
@@ -384,7 +384,7 @@ static void TaskStopWatch(void )
 
 			// Put task to sleep until the Reset button semaphore is set
 			// --> signals that the Reset push button was pressed
-			// portMAX_DELAY: wait for ever (without a timeout)
+			// portMAX_DELAY: wait forever (without a timeout)
 			xSemaphoreTake(SemReset,portMAX_DELAY);
 			// the Reset button semaphore is set -> switch the status to RESETED
 			cur_status = RESETED;
@@ -401,7 +401,7 @@ static void TaskStopWatch(void )
 		// Enter infinity loop
 		for( ;; )
 		{
-			// Toogle a LED
+			// Toggle a LED
 			blinkLED();
 
 			// Put the task for 100ms to sleep
@@ -418,7 +418,7 @@ static void TaskStopWatch(void )
 void displayValue(uint32_t val)
 {
 #if BCONF_EN_SEVSIG == 1
-	// Write the value to the 7sigment display
+	// Write the value to the 7segment display
 	IOWR_32DIRECT(DE10STD7SIG_BASE,0,val< BCONF_EN_SEVSIG_LEN ? val: BCONF_EN_SEVSIG_LEN);
 #endif
 #if BCONF_EN_LEDDISP == 1
@@ -428,7 +428,7 @@ void displayValue(uint32_t val)
 }
 
 #if BCONF_EN_TOGLE_LED == 1
-	/*! \brief Toogle a LED
+	/*! \brief Toggle a LED
 	 */
 	void blinkLED(void)
 	{
@@ -450,14 +450,14 @@ static void pb_exti_irq(void *context, alt_u32 id)
 	{
 		// The Start/Stop key was pressed -> load the semaphore
 		xSemaphoreGiveFromISR(SemStartStop,NULL);
-		// take other Semaphore to avoid multiple push button input
+		// take other Semaphore to avoid multiple push button inputs
 		xSemaphoreTakeFromISR(SemReset,NULL);
 	}
 	else if( key== 2)
 	{
 		// The Reset key was pressed
 		xSemaphoreGiveFromISR(SemReset,NULL);
-		// take other Semaphore to avoid multiple push button input
+		// take other Semaphore to avoid multiple push button inputs
 		xSemaphoreTakeFromISR(SemStartStop,NULL);
 	}
 

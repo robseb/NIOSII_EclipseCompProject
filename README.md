@@ -2,16 +2,16 @@
 ![GitHub](https://img.shields.io/static/v1?label=Core&message=Intel+NIOS+II&color=blue)
 ![GitHub](https://img.shields.io/static/v1?label=hwlib+SoC-FPGA&message=Cyclone+V,+Arria+V,+Arria+10&color=yellowgreen)
 ![GitHub](https://img.shields.io/github/license/robseb/NIOSII_EclipseCompProject)
-# Python Script to automatically generate a Intel NIOS II Eclipse Project with a custom software components (e.g. FreeRTOS)
+# Python Script to automatically generate a Intel NIOS II Eclipse Project with custom software components (e.g. FreeRTOS)
 
 ![Alt text](doc/Concept.png?raw=true "Concept illustration")
 
 <br>
 
-**This Python script can automate the project preparation process by generating in Eclipse Demo project with selected components. For every by the user chosen component is an TCL-script generated and it will be added to the demo project.**
+**This Python script can automate the project preparation process by generating a Eclipse Demo project with selected components. For every by the user chosen component is a TCL-script generated and it will be added to the demo project.**
 
-In the same way it is enabled to drag & drop folder with custom code to add them to the project. The often time intensive manual pre-configuration process is not necessary any more. 
-The script can for instant clone the latest Kernel of the real-time operating system “*FreeRTOS*” from *GitHub* and removes the driver for other platforms and generates TCL-scripts with all global values, sources and includes. 
+In the same way it is enabled to drag & drop folders with custom code to add them to the project. The often time intensive manual pre-configuration process is not necessary any more. 
+The script can for instant clone the latest Kernel of the real-time operating system “*FreeRTOS*” from *GitHub* and remove the drivers for other platforms and generate TCL-scripts with all global values, sources and includes. 
 
 This script is designed to work together with the complete Intel development suite and supports every Intel FPGA device family with the support of the NIOS II soft core processor. 
 
@@ -20,18 +20,17 @@ In the future I will add more and more components that can be selected and added
 ___
 
 ![Alt text](doc/EclipseDebugFreeRTOS.png?raw=true "Sceeenshoot Debugging FreeRTOS")
-**Screenshot of a Eclipse Debugging sesion of a automaticly generated project with FreeRTOS**
-
+**Screenshot of a Eclipse Debugging session of an automatically generated project with FreeRTOS**
 
 # Selectable Components
-The list of selected comports, that can be automatically cloned from Github will updated. <br>
-Now, are following components available: 
+The list of selected components, that can be automatically cloned from Github will be updated. <br>
+Now, the following components are available: 
 
 | Components | Description
 |:--|:--|
 | [**FreeRTOS-Kernel**](https://github.com/FreeRTOS/FreeRTOS-Kernel) *for NIOS II*    | The latest FreeRTOS Version cloned from Github  |
 | [**Intel hwlib**](https://github.com/robseb/hwlib) optimized for NIOS II    | Library for accessing HPS components of SoC-FPGAs with NIOS II |
-|  `Custom Code folders` | Inserted folders with user libraries 
+|  `Custom Code folders` | Inserted folders with custom user libraries 
 
 # Supported Platforms 
 
@@ -81,7 +80,7 @@ The following step-by-step guide show how to install the necessary Intel Quartus
                 * Enable and Install WSL with the *Windows Power Shell*
                 * Update to **WSL 2**
                 * Install a **Ubuntu Linux Distribution**
-                * Set up the distribution with a user name and password
+                * Set up the distribution with your user credentials
             * Install additional components required by the *NIOS II Command Shell*
                 *  Open the Windows Command Prompt and execute following command to start the wsl
                     ````cmd
@@ -142,13 +141,13 @@ The following step-by-step guide show how to install the necessary Intel Quartus
                 * **Ubuntu:**  "intelFPGA_lite\19.1\nios2eds\bin"
         * **Extract** (unzip) the downloaded file
         * **Rename** the folder "*eclipse*" inside the extracted folder to "*eclipse_nios2*"
-        * **Copy** the folder "*eclipse_nios2*" inside the extract folder to:
+        * **Copy** the folder "*eclipse_nios2*" inside the extracted folder to:
             * **Windows 10:** "C:\intelFPGA_lite\19.1\nios2eds\bin"
             * **Ubuntu:**  "intelFPGA_lite\19.1\nios2eds\bin"
         * **Extract** (unzip) the file to a temporary location on the desktop 
             * **Windows 10:** C:\intelFPGA_lite\19.1\nios2eds\bin\eclipse_nios2_plugins.zip
              * **Ubuntu:** intelFPGA_lite\19.1\nios2eds\bin\eclipse_nios2_plugins.tar.gz
-        * **Copy** the content of this extracted folder to the before downloaded folder 
+        * **Copy** the content of this extracted folder to the further downloaded folder 
             * **Windows 10:** C:\intelFPGA_lite\19.1\nios2eds\eclispe_nios2
             * **Ubuntu:** intelFPGA_lite\19.1\nios2eds\bin\\eclispe_nios2
             * **Replace** the file in the folder with the new one by merging them together 
@@ -159,10 +158,10 @@ The following step-by-step guide show how to install the necessary Intel Quartus
 <br>
 
 ## II. Run the script to generate a new custom Eclipse Project
-To use this script to generate a custom Eclipse project for the NIOS II sof-core processor realise follow instructions:
+To use this script to generate a custom Eclipse project for the NIOS II soft-core processor realise the following instructions:
 * II.1.: **Clone this Github repository**
 * II.2.: **Open the Windows Command prompt or the Linux Terminal and navigate to the repository folder**
-* II.3.: **Install a *Python Pip* module to clone Github repositories by running following command**
+* II.3.: **Install a *Python Pip* module to clone Github repositories by running the following command**
     * **Windows 10**
         ````shell
         pip3 install dload
@@ -171,7 +170,7 @@ To use this script to generate a custom Eclipse project for the NIOS II sof-core
         ````shell
         pip3 install GitPython
         ````
-* II.3.: **Execute the Python script by running following command**
+* II.3.: **Execute the Python script by running the following command**
     * **Windows 10**
         * **Run the script as administrator to avoid permission issues by writing to C:**
         ````shell
@@ -196,7 +195,7 @@ Also, it is enabled to drag & drop folders with custom Code to the *"working_fol
 ## IV. Create a new Eclipse project with the generate example project
 <br>
 
-Follow following instructions to create a new Eclipse for NIOS II project with the previously generated example project. 
+Follow the next guidelines to create a new Eclipse for NIOS II project with the previously generated example project. 
 
 <details>
 <summary><strong>Start Eclipse for NIOS II</strong></summary>
@@ -242,10 +241,10 @@ Follow following instructions to create a new Eclipse for NIOS II project with t
     * The pre-installed demo contains a simple stop watch written as FreeRTOS task
     * Choice your FPGA development board for this demo due to specifying "*SELCTED_BOARD*" in "*main.c*"
         ````c
-        #define TERASIC_DE0_NANO    1  // Terasic DE0  NANO Board with a Intel Cyclone IV FPGA
-        #define TERASIC_DE10_STD    2  // Terasic DE10 STANDARD Board with a Intel Cyclone V SoC-FPGA
-        #define TERASIC_DE10_NANO   3  // Terasic DE10 NANO Board with a Intel Cyclone V SoC-FPGA
-        #define TERASIC_HAN_PILOT   4  // Terasic HAN PILOT Board with a Intel Arria 10 SoC-FPGA
+        #define TERASIC_DE0_NANO    1  // Terasic DE0  NANO Board with an Intel Cyclone IV FPGA
+        #define TERASIC_DE10_STD    2  // Terasic DE10 STANDARD Board with an Intel Cyclone V SoC-FPGA
+        #define TERASIC_DE10_NANO   3  // Terasic DE10 NANO Board with an Intel Cyclone V SoC-FPGA
+        #define TERASIC_HAN_PILOT   4  // Terasic HAN PILOT Board with an Intel Arria 10 SoC-FPGA
         #define CUSTOM_BOARD	    0  // Custom board with a custom board configuration
         #define UNKOWN_BOARD	   -1
         /////
@@ -275,19 +274,19 @@ In the following steps are shown how to start a debugging session on a FPGA deve
 
     ![Alt text](doc/EclipseDebugConfWin1.png?raw=true "Eclipse Debug configuration window")
 
-* Double-click to the list iteam "**Nios II Hardware**" to create a new debugging configuration
+* Double-click to the list item "**Nios II Hardware**" to create a new debugging configuration
 * Inside the debugging configuration select the **Project name** of your previously created project
     ![Alt text](doc/EclipseDebugConfWin2.png?raw=true "Eclipse Debug configuration window - project selection")
 * Check on the tap "**Debugger**" that Eclipse could find the FPGA Blaster of your board
       ![Alt text](doc/EclipseDebugConfWin3.png?raw=true "Eclipse Debug configuration window - Debugger")
 *  Start the debugging session by pressing the "**Apply**"- and "**Debug**"-Button
-* Now should start the debugging process as shown in screenshot above
+* Now should start the debugging process as shown in the screenshot above
 
 </details>
 
 ## VI. Example output of the Python script
 <details>
-<summary><strong>The output after a executon</strong></summary>
+<summary><strong>The output after an execution</strong></summary>
 <a name="step5"></a>
 
 ````shell

@@ -13,7 +13,7 @@
 # Robin Sebastian (https://github.com/robseb)
 #
 #
-# Python Script to automatically generate a Intel NIOS II Eclipse Project with FreeRTOS,
+# Python Script to automatically generate an Intel NIOS II Eclipse Project with FreeRTOS,
 # the Intel hwlib for the SoC-FPGAs and more
 #
 # (2020-05-10) Vers.1.0 
@@ -56,9 +56,6 @@ else:
         print('==> pip3 install dload')
         sys.exit()
 
-
-
-#rom git import RemoteProgress
 import subprocess
 import shutil
 from subprocess import Popen, PIPE
@@ -128,10 +125,10 @@ if sys.platform =='linux':
                 sys.stdout.write("\033[F")
                 print("    "+message)
 
-# @brief Copy cloned Github repository over an local temp folder to a final 
+# @brief Copy cloned Github repository over a local temp folder to a final 
 #        destination to remove write restricted files 
 #
-def copy_git_windows_frindy(source,temp, fileTemp,dest):
+def copy_git_windows_friendly(source,temp, fileTemp,dest):
 
     try:
         if(os.path.isdir(fileTemp)):
@@ -225,14 +222,14 @@ def generate_tcl_file_header_os(FileName,OSName,DisplayName,VersionNo,BspSubdir)
            '# Create new OS called "'+OSName+'"                              \n'+ \
            'create_os '+OSName+'                                             \n'+ \
            '                                                                 \n'+ \
-           '# Chose UI Display Name: "'+DisplayName+'"                       \n'+ \
-           'set_sw_property display_name '+DisplayName+'                      \n'+ \
+           '# Chosen UI Display Name: "'+DisplayName+'"                      \n'+ \
+           'set_sw_property display_name '+DisplayName+'                     \n'+ \
            '                                                                 \n'+ \
            '# The OS should extends the HAL BSP                              \n'+ \
            'set_sw_property extends_bsp_type HAL                             \n'+ \
            '                                                                 \n'+ \
            '# The version Number of this software                            \n'+ \
-           'set_sw_property version '+VersionNo+'                             \n'+ \
+           'set_sw_property version '+VersionNo+'                            \n'+ \
            '                                                                 \n'+ \
            '# Location in generated BSP that above sources will be copied into \n'+ \
            'set_sw_property bsp_subdirectory '+ OSName+'                     \n' + \
@@ -244,7 +241,7 @@ def generate_tcl_file_header_os(FileName,OSName,DisplayName,VersionNo,BspSubdir)
 
 
 #
-# @brief Check the in "generate_tcl_file_sources" founded file and write 
+# @brief Check the in the "generate_tcl_file_sources" founded files and write 
 #        them to the TCL script file
 #
 def add_files_to_list(fileName,pathRel,MainFolder):
@@ -326,7 +323,7 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
                 print('    <-- '+ pathsuffix)
                 tcl_str=tcl_str+'\n'   
                 
-                # Multi Jump to a other path required 
+                # Multi Jump to an other path required 
                 if(MultiJump):
                     #Find a folder that is not progressed jet
                     tempC =0
@@ -489,7 +486,7 @@ def selection_menu(header1,header2, setitem1, setitem2 ):
     print('------------------------------------------------------------------------------')
     print('Q,C = abort execution ')
     while True:
-        nb = input('--> Please chose with 1 or 2 = ')
+        nb = input('--> Please choose with 1 or 2 = ')
         if(nb == '1'):
             print('---->'+setitem1+'\n')
             return 0
@@ -518,7 +515,7 @@ if __name__ == '__main__':
     print('#    ##    ##  ##    ##       ##    ##     ## ##    ##    ##    ##     ##    #')    
     print('#    ##     ##  ######        ##     #######   ######     ##     #######     #') 
     print('#                                                                            #')
-    print("#       AUTOMATIC SCRIPT FOR GENERATING A ECLIPSE FOR NIOS II PROJECT        #")
+    print("#       AUTOMATIC SCRIPT FOR GENERATING AN ECLIPSE FOR NIOS II PROJECT       #")
     print("#                    WITH CUSTOM COMPONENTS,OS AND HAL,...                   #")
     print('#                                                                            #')
     print("#               by Robin Sebastian (https://github.com/robseb)               #")
@@ -545,11 +542,11 @@ if __name__ == '__main__':
 
     QURTUS_NIOSSHELL_DIR    = SPLM[SPno]+"nios2eds"+SPLM[SPno]+NIOS_CMD_SHEL[SPno]
 
-    # 1.Step: Find the Qurtus installation path
+    # 1.Step: Find the Quartus installation path
     print('--> Try to find the default Quartus installation path')
 
     quartus_standard_ver = False
-    # Loop to dected the case that the free Version of EDS (EDS Standard [Folder:intelFPGA]) and 
+    # Loop to detect the case that the free Version of EDS (EDS Standard [Folder:intelFPGA]) and 
     #    the free Version of Quartus Prime (Quartus Lite [Folder:intelFPGA_lite]) are installed together 
     while(True):
         if (os.path.exists(Quartus_Folder_def_suf_dir+QURTUS_DEF_FOLDER)) and (not quartus_standard_ver):
@@ -559,7 +556,7 @@ if __name__ == '__main__':
             Quartus_Folder=Quartus_Folder_def_suf_dir+QURTUS_DEF_FOLDER_LITE
             quartus_standard_ver = False
         else:
-            print('ERROR: No Intel Qurtus Installation Folder was found!')
+            print('ERROR: No Intel Quartus Installation Folder was found!')
             sys.exit()
 
         # 2.Step: Find the latest Quartus Version No.
@@ -572,7 +569,7 @@ if __name__ == '__main__':
                     pass
 
         if (len(avlVer)==0):
-            print('ERROR: No vailed Quartus Version was found')
+            print('ERROR: No valid Quartus Version was found')
             sys.exit()
 
         avlVer.sort(reverse = True) 
@@ -581,7 +578,7 @@ if __name__ == '__main__':
         Quartus_Folder = Quartus_Folder + SPLM[SPno]+ str(highestVer)   
 
         if (not(os.path.realpath(Quartus_Folder))):
-            print('ERROR: No Qurtus Installation Folder was found!')
+            print('ERROR: No Quartus Installation Folder was found!')
             sys.exit()
 
 
@@ -629,7 +626,7 @@ if __name__ == '__main__':
     projectName= "working_folder"
     print('\n--> Working Folder Name: %s \n' % (projectName))
 
-    # hwlib requiered ? 
+    # hwlib required ? 
     glob.hwlib_selection = selection_menu('Intel hwlib for using the peripheral HPS components ','of the Cyclone and Arria SoC-FPGA with the NIOS II','Install the hwlib','Do not pre-install the hwlib') +1
 
     glob.selectedTragedDevice= 0# 1: CY5/A5, 2: A10
@@ -663,11 +660,11 @@ if __name__ == '__main__':
                 git.Repo.clone_from(GIT_FREERTOS_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel', 
                 branch='master', progress=CloneProgress())
             except Exception as ex:
-                print('ERROR: The cloneing failed! Error Msg.:'+str(ex))
+                print('ERROR: The cloning failed! Error Msg.:'+str(ex))
                 sys.exit()
         else:
             if( dload.git_clone(GIT_FREERTOS_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]) == 'Invalid clone_dir'):
-                print('ERROR: The downloaded FreeRTOS Folder is not in a vialed format!')
+                print('ERROR: The downloaded FreeRTOS Folder is not in a valid format!')
                 sys.exit()
             if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master')):
                 os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
@@ -678,7 +675,7 @@ if __name__ == '__main__':
     print('--> Check if the FreeRTOS folders looks okay')
     if(not (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable")) and (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"include"))
     and (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable"+SPLM[SPno]+"GCC"))and (os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable"+SPLM[SPno]+"GCC"+SPLM[SPno]+"NiosII"))):
-        print('ERROR: The downloaded FreeRTOS Folder is not in a vialed format!')
+        print('ERROR: The downloaded FreeRTOS Folder is not in a valid format!')
         sys.exit()
     else:
         print('    looks okay')
@@ -686,7 +683,7 @@ if __name__ == '__main__':
     ########################################### Remove BSP driver for other Platforms ###############################
 
     # 1. Step: Remove support for other compilers (Only the GCC complier should be supported)
-    print('--> Remove support of diffrent compliers as GCC')
+    print('--> Remove support of different compilers as GCC')
     
     # Allow only the folder "GCC" and "MemMang" inside /FreeRTOS-Kernel/portable
     print('--> Allow only the folder "GCC" and "MemMang" inside /FreeRTOS-Kernel/portable')
@@ -702,8 +699,8 @@ if __name__ == '__main__':
                             print('Warning: Failed to delate folder: /FreeRTOS-Kernel/portable/'+name)
     
     # 2. Step: Remove support for other platform
-    print('--> Remove support of diffrent Platform as Intel NIOS II')
-    # Alow only the NIOS II folder inside /FreeRTOS-Kernel/portable/GCCs
+    print('--> Remove support of different Platform as Intel NIOS II')
+    # Allow only the NIOS II folder inside /FreeRTOS-Kernel/portable/GCCs
     for name in os.listdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+"portable"+SPLM[SPno]+"GCC"):
         if  os.path.abspath(name):
             if (not (name == 'NiosII')):
@@ -743,7 +740,7 @@ if __name__ == '__main__':
                     git.Repo.clone_from(GIT_HWLIB_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib', 
                     branch='master', progress=CloneProgress())
                 except Exception as ex:
-                    print('ERROR: The cloneing failed! Error Msg.:'+str(ex))
+                    print('ERROR: The cloning failed! Error Msg.:'+str(ex))
                     sys.exit()
             else:
                 dload.git_clone(GIT_HWLIB_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
@@ -753,9 +750,9 @@ if __name__ == '__main__':
 
     ########################################### Check if the hwlib format is okay ################################
     if glob.hwlib_selection == 1:
-        print('--> Check if the hwlib folders looks okay')
+        print('--> Check if the folders inside hwlib look okay')
         if(not (os.path.isdir(projectName+SPLM[SPno]+"hwlib"))):
-            print('ERROR: The downloaded hwlib Folder is not in a vialed format!')
+            print('ERROR: The downloaded hwlib Folder is not in a valid format!')
             sys.exit()
         else:
             print('    looks okay')
@@ -765,11 +762,11 @@ if __name__ == '__main__':
     print('#                                                                              #')
     print('#           OPTIONAL: ADD CUSTOM COMPONENTS TO THE PROJECT                     #')
     print('#                                                                              #')
-    print('#  Add this point it is possible to generate for custom code a NIOS II Eclipse #')
+    print('#  At this point it is possible to generate for custom code a NIOS II Eclipse #')
     print('#  component to add the code to the final NIOS II Eclipse HAL project          #')
     print('#                                                                              #')
     print('#  Copy a folder with the code to the working folder                           #')
-    print('#  for every folder will be a  NIOS II Eclipse component be generareted and    #')
+    print('#  for every folder will be a  NIOS II Eclipse component be generated and      #')
     print('#  it will be added to the final Demo project                                  #')
     print('#                                                                              #')
     print('#  Note: The folder name will be used as component name                        #')
@@ -799,7 +796,7 @@ if __name__ == '__main__':
     if(not (os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'))):
         print('NOTE: No additional files for FreeRTOS available!')
     else:
-        print('--> Coy additional files to the FreeRTOS folder')
+        print('--> Copy additional files to the FreeRTOS folder')
         # Copy Source files to the main folder 
         if(os.path.isdir("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'src')):
             print('    Copy source files')
@@ -811,10 +808,10 @@ if __name__ == '__main__':
                 print('Error: Failed to copy additional source files to FreeRTOS-Kernel')
                 sys.exit()
         
-        # Relace the port.c file with additional/port.c file 
+        # Replace the port.c file with additional/port.c file 
         if(os.path.isfile("Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'portable'+SPLM[SPno]+'port.c')
             and os.path.isfile(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'GCC'+SPLM[SPno]+'NiosII'+SPLM[SPno]+'port.c')):
-            print('--> Relace the port.c file with additional/port.c file')
+            print('--> Replace the port.c file with additional/port.c file')
             try:
                 os.remove(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+"FreeRTOS-Kernel"+SPLM[SPno]+'portable'+SPLM[SPno]+'GCC'+SPLM[SPno]+'NiosII'+SPLM[SPno]+'port.c')
                 shutil.copy2(os.getcwd()+SPLM[SPno]+"Additional"+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+'portable'+SPLM[SPno]+'port.c',
@@ -872,7 +869,7 @@ if __name__ == '__main__':
     print('    Copy the FreeRTOS Kernel to the Quartus Component folder')
 
     try:
-        copy_git_windows_frindy(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'FreeRTOS-Kernel',os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'FreeRTOS'+SPLM[SPno],
+        copy_git_windows_friendly(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'FreeRTOS-Kernel',os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'FreeRTOS'+SPLM[SPno],
                             os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'source',Quartus_componet_folder+SPLM[SPno]+'FreeRTOS')
     except Exception as ex:
         print('Error during FreeRTOS-Kernel data processing')
@@ -894,7 +891,7 @@ if __name__ == '__main__':
         print('    Copy the hwlib to the Quartus Component folder')
 
         try:
-            copy_git_windows_frindy(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'hwlib',os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'hwlibNIOS'+SPLM[SPno],
+            copy_git_windows_friendly(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'hwlib',os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'hwlibNIOS'+SPLM[SPno],
                                 os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'top'+SPLM[SPno],Quartus_componet_folder+SPLM[SPno]+'hwlib')
         except Exception as ex:
             print('Error during hwlib data processing')
@@ -916,7 +913,7 @@ if __name__ == '__main__':
             print('--> Generate the component "'+FolderName+'" code file structure and')
             print('    Copy it to the Quartus Component folder')
             try:
-                copy_git_windows_frindy(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+FolderName,os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+FolderName+'NIOS'+SPLM[SPno],
+                copy_git_windows_friendly(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+FolderName,os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+FolderName+'NIOS'+SPLM[SPno],
                                     os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'top'+SPLM[SPno],Quartus_componet_folder+SPLM[SPno]+FolderName)
             except Exception as ex:
                 print('ERROR: during '+FolderName+' data processing')
@@ -1012,7 +1009,7 @@ if __name__ == '__main__':
     with open(Quartus_componet_folder+SPLM[SPno]+'FreeRTOS'+SPLM[SPno]+"FreeRTOS_sw.tcl","a") as f:
         f.write(tcl_freeRTOS_str)
 
-    print('   Generatation of TCL OS TCL script for FreeRTOS done')
+    print('   Generatation of the TCL OS TCL script for FreeRTOS done')
 
     # ================================ TCL SCRIPTS FOR CUSTOM USER COMPONENTS ======================================
     if len(glob.customFolderName)>0:
@@ -1052,20 +1049,20 @@ if __name__ == '__main__':
             with open(Quartus_componet_folder+SPLM[SPno]+FolderName+SPLM[SPno]+FolderName+"_sw.tcl","a") as f:
                 f.write(tcl_hwlib_str)
 
-            print('   Generatation of TCL component TCL script for '+FolderName+' done')
+            print('   Generatation of the TCL component TCL script for '+FolderName+' done')
 
     
     ############################# Allow the user to add custom code to the project  ###############################
     if len(glob.customFolderName)>0:
         print('\n################################################################################')
         print('#                                                                              #')
-        print('#  OPTIONAL: EDIT THE GENERATE TCL SCRIPT FOR CUSTOM COMPONENTS                #')
+        print('#  OPTIONAL: EDIT THE GENERATED TCL SCRIPT FOR CUSTOM COMPONENTS               #')
         print('#                                                                              #')
-        print('#  Add this point it is possible to edit the autogenerated TCL Scripts for the #')
+        print('#  At this point it is possible to edit the autogenerated TCL Scripts for the  #')
         print('#  custom components                                                           #')
         print('#                                                                              #')
         print('-------------------------------------------------------------------------------')
-        print('#  Open and edit following file/s:                                             #')
+        print('#  Open and edit the following file/s:                                         #')
 
         for FolderName in glob.customFolderName:
             print('         for the Component "'+FolderName+'":')
@@ -1118,7 +1115,7 @@ if __name__ == '__main__':
 
         with Popen(Quartus_Folder+QURTUS_NIOSSHELL_DIR, stdout = subprocess.PIPE, stdin=subprocess.PIPE) as niosCmdSH:
            
-            print('   Check that the NIOS II Command Shell works porterly')
+            print('   Check that the NIOS II Command Shell works properly')
             startUpMsg =''
             line = 'xx'
             while not(line =='' or line=='\n'):
@@ -1127,9 +1124,9 @@ if __name__ == '__main__':
             
             niosCmdSH.communicate() 
             niosCmdSH.stdout.close()
-            # Check that the NIOS II Command Shell was open Succsessfull 
+            # Check that the NIOS II Command Shell was open successfully 
             if not "Altera Nios2 Command Shell" in startUpMsg:
-                print('ERROR: Failed to start the NIOS II Command Shell sucessfully!')
+                print('ERROR: Failed to start the NIOS II Command Shell successfully!')
                 sys.exit()
             print('    looks ok')
 
@@ -1154,10 +1151,10 @@ if __name__ == '__main__':
             niosCmdSH.stdin.write(b) 
             time.sleep(0.5)
             
-            print('--> Generate now Eclipse for NIOS components by executing the TCL scripts')
+            print('--> Generate now the Eclipse for NIOS components by executing the TCL scripts')
 
             if(highestVer>=19.1 and not(sys.platform =='linux')):
-                print("   Windows 10 Version for 19.1")
+                print("   Windows 10 Version for 19.1+")
                 b = bytes('ip-make-ipx.exe --source-directory=. --output=components.ipx\n', 'utf-8')
             else:
                 b = bytes('ip-make-ipx --source-directory=. --output=components.ipx\n', 'utf-8')
@@ -1183,7 +1180,7 @@ if __name__ == '__main__':
     print('#                                                                              #')
     print('#               --- Open the generated Example Project ---                     #')
     print('#      +  Select inside Eclipse:  File > New > NIOS II Application and BSP ... #')
-    print('#      + Select the Temaplate: "FreeRTOS - robseb"                             #')
+    print('#      + Select the Template: "FreeRTOS - robseb"                              #')
     print('#                                                                              #')
     print('#                 --- Use the generated NIOS II BSP  ---                       #')
     print('#      +  Select inside Eclipse:  File > New > NIOS II Board Support Package   #')
@@ -1197,8 +1194,8 @@ if __name__ == '__main__':
     print('#                     (https://github.com/robseb/)                             #')
     print('#                                                                              #')
     print('#    NIOSII_EclipseCompProject and rsYocto are projects, that I have fully     #')
-    print('#        developed on my own. No companies are involved in this projects.      #')
-    print('#        Today I aim a Master Student of electronic engineering                #')
+    print('#        developed on my own. No companies are involved in these projects.     #')
+    print('#        Today I am a Master Student of electronic engineering                 #')
     print('#            Please support me for further development                         #')
     print('#                                                                              #')
     print('################################################################################')
