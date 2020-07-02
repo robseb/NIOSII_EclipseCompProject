@@ -64,6 +64,8 @@ extern "C" {
 #include "task.h"
 #include "semphr.h"
 
+	
+#include "system.h"
 //
 // NIOS II HAL includes
 //
