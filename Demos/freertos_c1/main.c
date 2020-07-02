@@ -340,6 +340,7 @@ static void TaskStopWatch(void )
 
 			// Start/Stop push button was pressed -> switch state to RUNNING
 			cur_status = RUNNING;
+			break;
 		/*
 		 * --- State RUNNING ---
 		 * 	Stop watch running:  YES
