@@ -94,7 +94,7 @@ The following step-by-step guide shows how to setup a *CentOS 7.7 virtual machin
 * Restart the *CentOS*
 * **Login as root**
     * The local user account does not have enough space to install *Intel Quartus Prime*
-    * Select **"Additional User**" and use the name "**root**
+    * Select **"Not listed**" and use the name "**root**"
 </details>
 
 ## I. Installment of Intel Quartus Prime 19.1 and 20.1 with NIOS II support
