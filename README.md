@@ -37,8 +37,9 @@ Now, the following components are available:
 * **Desktop OS**
     * **Windows 10**
     * **Ubuntu Linux**
+    * **CentOS 7.7**
 * **IDE**
-    * **Intel Quartus Prime Lite**<!--  -->
+    * **Intel Quartus Prime Lite**
     * **Intel Quartus Prime Standard**
 
 * **Every Intel FPGA with NIOS II support**  
@@ -49,22 +50,60 @@ Now, the following components are available:
     * **Intel Arria V SoC-FPGA**-families
     * **Intel Arria 10 SX SoC-FPGA**-family  
 
-* Tested Platforms
-    * Intel Quartus Prime Lite 19.1 Ubuntu & Windows 10 
-    * Intel Quartus Prime Lite 18.1 Ubuntu & Windows 10 
-    * Quartus Prime Standard 18.1 Windows 10
+* **Tested Platforms**
+    * **Intel Quartus Prime Lite 18.1 Windows 10** (*recommended by my*)
+    * **Quartus Prime Standard 18.1 Windows 10**   (*recommended by my*)
+    * **Quartus Prime Lite 20.1 CentOS 7.7**       (*recommended by my*)
+    * **Intel Quartus Prime Lite 19.1 Ubuntu & Windows 10** 
 
 
 # Getting started
 
-## I. Installment of Intel Quartus Prime 19.1 with NIOS II support
+## By the way: Setup of a CentOS 7.7 development virtual machine for Quartus 20.1
+<br>
+<details>
+<summary><strong>Step-by-step guide</strong></summary>
+<a name="Pos0"></a>
+<br>
+
+The following step-by-step guide shows how to setup a *CentOS 7.7 virtual machine for Quartus Prime 20.1:
+
+* Download the  [**CentOS 7.0 Image**](http://ftp.halifax.rwth-aachen.de/centos/7/isos/x86_64/)
+* Install a Virtual Machine Hypervisor, like *VMware Workstation Player* or *Virtual Box*
+* Create a new CentOS Virtual Machine
+* Follow the installation instructions  
+    *   Select as **"Software"**: **"Developer and Creative Workstation"** 
+            ![Alt text](doc/CentOSinstallment.png?raw=true "Screenshot of the Python installer")
+    * As **"Ad-Ons for Selected Envionment"** I chose
+        * **Additional Development**
+        * **Compatibility Libraries**
+        *  **KDE**
+* Finish the installation process of *CentOS*
+* On the running *CentOS* virtual machine install the *open vm tools* for a better system driver stability
+    * Execute following Linux command:
+        ````shell
+        sudo yum install open-vm-tools
+        ````
+        * **Note:** The network interface (*NIC*) disenabled by default!   
+* Install the latest updates for the system components and update to CentOS Version 7.7
+    * Execute following Linux command:
+	     ````shell
+        sudo yum update
+        ````
+* Restart the *CentOS*
+* **Login as root**
+    * The local user account does not have enough space to install of *Intel Quartus Prime*
+    * Select **"Additional User**" and use the name "**root**
+</details>
+
+## I. Installment of Intel Quartus Prime 19.1 and 20.1 with NIOS II support
 <br>
 <details>
 <summary><strong>Step-by-step guide</strong></summary>
 <a name="Pos1"></a>
 <br>
 
-The following step-by-step guide show how to install the necessary Intel Quartus Prime IDE with the Intel NIOS II Embedded Design Suite IDE for Windows and Linux (used Version for this guide: v19.1.0.670)
+The following step-by-step guide show how to install the necessary Intel Quartus Prime IDE with the Intel NIOS II Embedded Design Suite IDE for Windows and Linux (used Version for this guide: v19.1.0.670 and v20.1.0.711 )
 
 * I.1.: **Installment of additional required components**
     * **Windows 10**
@@ -92,64 +131,83 @@ The following step-by-step guide show how to install the necessary Intel Quartus
                     sudo apt-get install wsl make dos2unix
                     ````
     * **Ubuntu**
-        * Install *Python pip* by executing following Linux command
+        * Install *Python pip* and *git* by executing following Linux command
         ````shell
         sudo apt update
-        sudo apt install python3-pip
+        sudo apt install python3-pip git
         ````
-
-* I.2.: [**Download the latest Intel Quartus Prime Edition**](https://fpgasoftware.intel.com/?edition=lite) for your OS and with support for your Intel FPGA family (Quartus Prime (includes Nios II EDS) Version)
-* I.3.: **Download the Device support for your used FPGA device family**
+    * **CentOS**
+         * Install *Python3* with *Python pip* and *git* by executing following Linux command
+        ````shell
+        yum install python3 git
+        ````
+* I.2.: [**Download the Intel Quartus Prime Edition**](https://fpgasoftware.intel.com/?edition=lite) for your OS and with support for your Intel FPGA family (Quartus Prime (includes Nios II EDS) Version)
+* I.3.: **Download the Device support for your used FPGA device family** (*Already included in Quartus Prime 20.1*)
 * I.4.: **Installment of Intel Quartus Prime**
-    * **Ubuntu**
-        * Open the Linux **Terminal** and navigate to the download Quartus file
-        * Run following commands inside the Terminal: 
-            ````shell
-            chmod +x QuartusLiteSetup-19.X.X.XXX-linux.run
-            ./QuartusLiteSetup-19.X.X.XXX-linux.run
-            ````
-    * **Windows 10 & Ubuntu**
-        * Follow the instructions of the installer
-        * Use the default installation path
-        ![Alt text](doc/Screenshoot_installingQuartus.png?raw=true "Screenshot of the installing progress")
-
-* 1.5.: **Add support for your used FPGA family**
+    * **Quartus Prime 19.1 Lite**
+        * **Ubuntu**
+            * Open the Linux **Terminal** and navigate to the download Quartus file
+            * **Install Quartus Prime 19.1**
+	            * Run following commands inside the Terminal:
+                    ````shell
+                    chmod +x QuartusLiteSetup-19.X.X.XXX-linux.run
+                    ./QuartusLiteSetup-19.X.X.XXX-linux.run
+                    ````
+        * **Windows 10 & Ubuntu**
+            * Follow the instructions of the installer
+            * Use the default installation path
+            ![Alt text](doc/Screenshoot_installingQuartus.png?raw=true "Screenshot of the installing progress")
+    * **Quartus Prime 20.1 Lite**
+        * **CentOS**
+            * Unzip the downloaded Quartus archive file by using following command
+                ````shell
+                tar -xvzf Quartus-lite-20.X.X.XXX-linux.tar
+                ````
+            * **Annotation:** The GUI Archive Manager may experience problems with symbolic links
+        * **Install Quartus Prime 20.1**
+            * Navigate with the Linux Terminal in the unzipped folder
+            * Start the Qurtus Prime installation process by executing following script
+                ````shell
+                ./setup.sh
+                ````
+            * Follow the installer 
+* 1.5.: **Add support for your used FPGA family** (*Already included in Quartus Prime 20.1*)
     * **Windows 10** 
         *  Start from the Windows start menu the application **"Device Installer (Quartus Prime 19.1)"**  
-    * **Ubuntu** 
+    * **Ubuntu & CentOS** 
         * Open the installed Quartus Prime be executing following command inside the Linux Terminal:
     	  ````shell
-          intelFPGA_lite/19.1/quartus/bin ./quartus --64bit
+          intelFPGA_lite/X.1/quartus/bin ./quartus --64bit
           ````
         * After the first start of Intel Quartus Prime following Message Box should appear:
             ![Alt text](doc/QuartusMessageBox.png?raw=true "Screenshot of the message box")
         * Select **Yes** to add support for your chosen Intel FPGA device family
         * **Alternativ:** Inside Quartus Prime select: *Tools/Install Devices...* 
-    * **Windows 10 & Ubuntu**
+    * **Windows 10 & Ubuntu & CentOS**
         * Follow the installer
             * Select the folder where the downloaded Device support file (*.qdz*) is located
             * The chosen FPGA device family should be detected 
             * For example for the Intel Cyclone V family:
                 ![Alt text](doc/Screenshoot_DeviceSupport.png?raw=true "Screenshot of Device Support Installment")
 * 1.6.: **Installment of the *Intel NIOS II Software Build Tools* (SBT) for Eclipse**
-    * **Windows 10 & Ubuntu**
+    * **Windows 10 & Ubuntu & CentOS** (*For Quartus Prime 19.1 and Quartus Prime 20.1 required*)
         * **Download** CDT 8.8.1 which is Eclipse C/C++ IDE for Mars.2
             * [**CDT 8.8.1 for Windows**](https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-cpp-mars-2-win32-x86_64.zip)
             * [**CDT 8.8.1 for Linux**](https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz)
             * **Alternativ Mirror:** The files are inside the [**Releases**](https://github.com/robseb/NIOSII_EclipseCompProject/releases) of this Github repository available, as well. With this version you can copy the extract folder to
-                * **Windows 10:** "C:\intelFPGA_lite\19.1\nios2eds\bin"
-                * **Ubuntu:**  "intelFPGA_lite\19.1\nios2eds\bin"
+                * **Windows 10:** "C:\intelFPGA_lite\*X.X*\nios2eds\bin"
+                * **Ubuntu & CentOS***  "intelFPGA_lite\*X.X*\nios2eds\bin"
         * **Extract** (unzip) the downloaded file
         * **Rename** the folder "*eclipse*" inside the extracted folder to "*eclipse_nios2*"
         * **Copy** the folder "*eclipse_nios2*" inside the extracted folder to:
-            * **Windows 10:** "C:\intelFPGA_lite\19.1\nios2eds\bin"
-            * **Ubuntu:**  "intelFPGA_lite\19.1\nios2eds\bin"
+            * **Windows 10:** "C:\intelFPGA_lite\*X.X*\nios2eds\bin"
+            * **Ubuntu & CentOS**  "intelFPGA_lite\*X.X*\nios2eds\bin"
         * **Extract** (unzip) the file to a temporary location on the desktop 
-            * **Windows 10:** C:\intelFPGA_lite\19.1\nios2eds\bin\eclipse_nios2_plugins.zip
-             * **Ubuntu:** intelFPGA_lite\19.1\nios2eds\bin\eclipse_nios2_plugins.tar.gz
+            * **Windows 10:** C:\intelFPGA_lite\*X.X*\nios2eds\bin\eclipse_nios2_plugins.zip
+             * **Ubuntu & CentOS** intelFPGA_lite\*X.X*\nios2eds\bin\eclipse_nios2_plugins.tar.gz
         * **Copy** the content of this extracted folder to the further downloaded folder 
-            * **Windows 10:** C:\intelFPGA_lite\19.1\nios2eds\eclispe_nios2
-            * **Ubuntu:** intelFPGA_lite\19.1\nios2eds\bin\\eclispe_nios2
+            * **Windows 10:** C:\intelFPGA_lite\*X.X*\nios2eds\eclispe_nios2
+            * **Ubuntu & CentOS** intelFPGA_lite\*X.X*\nios2eds\bin\\eclispe_nios2
             * **Replace** the file in the folder with the new one by merging them together 
             * The folder should now look like:
                 ![Alt text](doc/Screenshoot_ContentFolder.png?raw=true "Screenshot of the folder content")
@@ -166,7 +224,7 @@ To use this script to generate a custom Eclipse project for the NIOS II soft-cor
         ````shell
         pip3 install dload
         ````
-    * **Ubuntu**
+    * **Ubuntu & CentOS**
         ````shell
         pip3 install GitPython
         ````
@@ -176,7 +234,7 @@ To use this script to generate a custom Eclipse project for the NIOS II soft-cor
         ````shell
         python makeNIOS_CompProject.py        
         ```` 
-    * **Ubuntu**
+    * **Ubuntu & CentOS**
         ````shell
         python3 makeNIOS_CompProject.py        
         ```` 
