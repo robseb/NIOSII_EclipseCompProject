@@ -59,7 +59,7 @@ Now, the following components are available:
 
 # Getting started
 
-## By the way: Setup of a CentOS 7.7 development virtual machine for Quartus 20.1
+## By the way: Setup of a *CentOS 7.7* development virtual machine for *Quartus Prime 20.1*
 <br>
 <details>
 <summary><strong>Step-by-step guide</strong></summary>
