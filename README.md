@@ -162,7 +162,7 @@ The following step-by-step guide show how to install the necessary Intel Quartus
         * **CentOS**
             * Unzip the downloaded Quartus archive file by using following command
                 ````shell
-                tar -xvzf Quartus-lite-20.X.X.XXX-linux.tar
+                tar -xvf Quartus-lite-20.X.X.XXX-linux.tar
                 ````
             * **Annotation:** The GUI Archive Manager may experience problems with symbolic links
         * **Install Quartus Prime 20.1**
