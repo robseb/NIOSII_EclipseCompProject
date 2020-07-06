@@ -179,7 +179,7 @@ The following step-by-step guide show how to install the necessary Intel Quartus
     	  ````shell
           intelFPGA_lite/X.1/quartus/bin ./quartus --64bit
           ````
-        * After the first start of Intel Quartus Prime following Message Box should appear:
+        * (*Only with Quartus Prime 19.1:*) After the first start of Intel Quartus Prime following Message Box should appear:
             ![Alt text](doc/QuartusMessageBox.png?raw=true "Screenshot of the message box")
         * Select **Yes** to add support for your chosen Intel FPGA device family
         * **Alternativ:** Inside Quartus Prime select: *Tools/Install Devices...* 
