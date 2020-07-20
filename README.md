@@ -54,6 +54,7 @@ Now, the following components are available:
 * **Tested Platforms**
     * **Intel Quartus Prime Lite 18.1 Windows 10** (*recommended by my*)
     * **Quartus Prime Standard 18.1 Windows 10**   (*recommended by my*)
+    * **Quartus Prime Lite 20.1 Windows 10**      
     * **Quartus Prime Lite 20.1 CentOS 7.7**       (*recommended by my*)
     * **Intel Quartus Prime Lite 19.1 Ubuntu & Windows 10** 
 
@@ -145,14 +146,14 @@ The following step-by-step guide show how to install the necessary Intel Quartus
 * I.2.: [**Download the Intel Quartus Prime Edition**](https://fpgasoftware.intel.com/?edition=lite) for your OS and with support for your Intel FPGA family (Quartus Prime (includes Nios II EDS) Version)
 * I.3.: **Download the Device support for your used FPGA device family** (*Already included in Quartus Prime 20.1*)
 * I.4.: **Installment of Intel Quartus Prime**
-    * **Quartus Prime 19.1 Lite**
+    * **Quartus Prime 19.1 Lite or 20.1 Lite**
         * **Ubuntu**
             * Open the Linux **Terminal** and navigate to the download Quartus file
-            * **Install Quartus Prime 19.1**
+            * **Install Quartus Prime**
 	            * Run following commands inside the Terminal:
                     ````shell
-                    chmod +x QuartusLiteSetup-19.X.X.XXX-linux.run
-                    ./QuartusLiteSetup-19.X.X.XXX-linux.run
+                    chmod +x QuartusLiteSetup-XX.X.X.XXX-linux.run
+                    ./QuartusLiteSetup-XX.X.X.XXX-linux.run
                     ````
         * **Windows 10 & Ubuntu**
             * Follow the instructions of the installer
@@ -172,9 +173,9 @@ The following step-by-step guide show how to install the necessary Intel Quartus
                 ./setup.sh
                 ````
             * Follow the installer 
-* 1.5.: **Add support for your used FPGA family** (*Already included in Quartus Prime 20.1*)
+* 1.5.: **Add support for your used FPGA family** 
     * **Windows 10** 
-        *  Start from the Windows start menu the application **"Device Installer (Quartus Prime 19.1)"**  
+        *  Start from the Windows start menu the application **"Device Installer (Quartus Prime XX.X)"**  
     * **Ubuntu & CentOS** 
         * Open the installed Quartus Prime be executing following command inside the Linux Terminal:
     	  ````shell
@@ -196,19 +197,19 @@ The following step-by-step guide show how to install the necessary Intel Quartus
             * [**CDT 8.8.1 for Windows**](https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-cpp-mars-2-win32-x86_64.zip)
             * [**CDT 8.8.1 for Linux**](https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz)
             * **Alternativ Mirror:** The files are inside the [**Releases**](https://github.com/robseb/NIOSII_EclipseCompProject/releases) of this Github repository available, as well. With this version you can copy the extract folder to
-                * **Windows 10:** "C:\intelFPGA_lite\*X.X*\nios2eds\bin"
-                * **Ubuntu & CentOS***  "intelFPGA_lite\*X.X*\nios2eds\bin"
+                * **Windows 10:** "C:\intelFPGA_lite\\**X.X**\\nios2eds\bin"
+                * **Ubuntu & CentOS***  "intelFPGA_lite/**X.X**/nios2eds/bin"
         * **Extract** (unzip) the downloaded file
         * **Rename** the folder "*eclipse*" inside the extracted folder to "*eclipse_nios2*"
         * **Copy** the folder "*eclipse_nios2*" inside the extracted folder to:
-            * **Windows 10:** "C:\intelFPGA_lite\*X.X*\nios2eds\bin"
-            * **Ubuntu & CentOS**  "intelFPGA_lite\*X.X*\nios2eds\bin"
+            * **Windows 10:** "C:\intelFPGA_lite\\**X.X**\\nios2eds\bin"
+            * **Ubuntu & CentOS**  "intelFPGA_lite/**X.X**/nios2eds/bin"
         * **Extract** (unzip) the file to a temporary location on the desktop 
-            * **Windows 10:** C:\intelFPGA_lite\*X.X*\nios2eds\bin\eclipse_nios2_plugins.zip
-             * **Ubuntu & CentOS** intelFPGA_lite\*X.X*\nios2eds\bin\eclipse_nios2_plugins.tar.gz
+            * **Windows 10:** C:\intelFPGA_lite\\**X.X**\\nios2eds\bin\eclipse_nios2_plugins.zip
+             * **Ubuntu & CentOS** intelFPGA_lite/*X.X*/nios2eds/bin/eclipse_nios2_plugins.tar.gz
         * **Copy** the content of this extracted folder to the further downloaded folder 
-            * **Windows 10:** C:\intelFPGA_lite\*X.X*\nios2eds\eclispe_nios2
-            * **Ubuntu & CentOS** intelFPGA_lite\*X.X*\nios2eds\bin\\eclispe_nios2
+            * **Windows 10:** C:\intelFPGA_lite\\**X.X**\\nios2eds\eclispe_nios2
+            * **Ubuntu & CentOS** intelFPGA_lite/**X.X**/nios2eds/bin/eclispe_nios2
             * **Replace** the file in the folder with the new one by merging them together 
             * The folder should now look like:
                 ![Alt text](doc/Screenshoot_ContentFolder.png?raw=true "Screenshot of the folder content")
@@ -267,7 +268,7 @@ Follow the next guidelines to create a new Eclipse for NIOS II project with the 
             * **Windows 10:** Start: *C:\intelFPGA\18.1\nios2eds*
             * **Ubuntu:** Execute following commands
             ````shell  
-            cd intelFPGA_lite/19.1/nios2eds/
+            cd intelFPGA_lite/XX.X/nios2eds/
             ./nios2_command_shell.sh
             ````
         * Start Eclipse inside the *NIOS II Command Shell* by typing following command
@@ -1046,8 +1047,15 @@ ___
 
 **Robin Sebastian**
 
-*NIOSII_EclipseCompProject* and *rsYocto* are projects, that I have fully developed on my own. No companies are involved in this projects.
-Today I'm a Master Student of electronic engineering with the major embedded systems. I‘m looking for an interesting job offer to share and deepen my shown skills starting summer 2020.
+*NIOSII_EclipseCompProject* and [*rsyocto*](https://github.com/robseb/rsyocto) are projects, that I have fully developed on my own.
+No companies are involved in my projects.
+I’m recently graduated as a master in electrical engineering with the major embedded systems (*M. Sc.*).
+
+I'm open for cooperations as a freelancer to realize your specific requirements.
+Otherwise, I‘m looking for an interesting full time job offer to share and deepen my shown skills.
+
+**[Github sponsoring is welcome.](https://github.com/sponsors/robseb)**
+
 
 [![Gitter](https://badges.gitter.im/rsyocto/community.svg)](https://gitter.im/rsyocto/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Email me!](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](mailto:git@robseb.de)
