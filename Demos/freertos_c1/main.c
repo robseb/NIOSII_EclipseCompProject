@@ -108,25 +108,27 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_EN_LEDDISP         1   // Enable the LED bin Display
 	#define BCONF_EN_LEDDISP_LEN   126   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE  126   // Max value to count for the stop watch counter
-	#define BCONF_COUNT_DELAY	   100   // Delay between every stop watch count in ms
+	#define BCONF_COUNT_DELAY	   100  // Delay between every stop watch count in ms
+	#define BCONF_COUNT_ADD		     1   // Value to add to the count value after single delay
 	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
 
 	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toggle LED task
 	#define BCONF_TOOGLE_LED_NO	     8   // LED number of the toggle LED
 
-#elif SELCTED_BOARD == TERASIC_DE0_NANO
+#elif SELCTED_BOARD == TERASIC_DE10_NANO
 	#define BCONF_EN_SEVSIG    	     0   // Enable the 7sig Display
 	#define BCONF_EN_SEVSIG_LEN      0   // Largest displayable number on 7sig Display
 	#define BCONF_EN_LEDDISP         1   // Enable the LED bin Display
-	#define BCONF_EN_LEDDISP_LEN   512   // Largest displayable on the LED bin Display
-	#define BCONF_MAX_COUNT_VALUE  511   // Max value to count for the stop watch counter
+	#define BCONF_EN_LEDDISP_LEN   127   // Largest displayable on the LED bin Display
+	#define BCONF_MAX_COUNT_VALUE  127   // Max value to count for the stop watch counter
 	#define BCONF_COUNT_DELAY	   100   // Delay between every stop watch count in ms
+	#define BCONF_COUNT_ADD			 1   // Value to add to the count value after single delay
 	#define BCONF_START_PBNO		 0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		     1   // Number of the Reset push button
 
 	#define BCONF_EN_TOGLE_LED	     1   // Enable the 50ms toggle LED task
-	#define BCONF_TOOGLE_LED_NO	     9   // LED number of the toggle LED
+	#define BCONF_TOOGLE_LED_NO	     7   // LED number of the toggle LED
 
 #elif SELCTED_BOARD == TERASIC_DE10_STD
 	#define BCONF_EN_SEVSIG    	      1   // Enable the 7sig Display
@@ -135,6 +137,7 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_EN_LEDDISP_LEN    511   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE 65535   // Max value to count for the stop watch counter
 	#define BCONF_COUNT_DELAY		 10   // Delay between every stop watch count in ms
+	#define BCONF_COUNT_ADD		     10   // Value to add to the count value after single delay
 	#define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
 
@@ -147,7 +150,8 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_EN_LEDDISP          0   // Enable the LED bin Display
 	#define BCONF_EN_LEDDISP_LEN      0   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE   255   // Max value to count for the stop watch counter
-	#define BCONF_COUNT_DELAY		100   // Delay between every stop watch count in ms
+	#define BCONF_COUNT_DELAY	   1000   // Delay between every stop watch count in ms
+	#define BCONF_COUNT_ADD		      1   // Value to add to the count value after single delay
     #define BCONF_START_PBNO		  0   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      1   // Number of the Reset push button
 
@@ -161,6 +165,7 @@ extern int alt_irq_register( alt_u32 id, void* context, void (*handler)(void*, a
 	#define BCONF_EN_LEDDISP_LEN      ()   // Largest displayable on the LED bin Display
 	#define BCONF_MAX_COUNT_VALUE     ()   // Max value to count for the stop watch counter
 	#define BCONF_COUNT_DELAY		  ()   // Delay between every stop watch count in ms
+	#define BCONF_COUNT_ADD		      ()   // Value to add to the count value after single delay
     #define BCONF_START_PBNO		  ()   // Number of the Start/Stop push button
 	#define BCONF_REST_PBNO		      ()   // Number of the Reset push button
 
@@ -362,7 +367,7 @@ static void TaskStopWatch(void )
 				// Start/Stop semaphore is not set
 
 				// Count the stop watch up and display the value
-				displayValue(countValue+=BCONF_COUNT_DELAY);
+				displayValue(countValue+=BCONF_COUNT_ADD);
 
 				// Put the task for BCONF_COUNT_DELAY ms to sleep
 				// portTICK_RATE_MS -> const to convert ms to systicks
@@ -449,14 +454,14 @@ static void pb_exti_irq(void *context, alt_u32 id)
 {
 	// Check witch key was pressed
 	uint32_t key = (~IORD_32DIRECT(PB_PIO_BASE,PIO_DATA_REG)) & (PB_START_STOP_MASK | PB_REST_MASK);
-	if( key== 1)
+	if( key== BCONF_START_PBNO)
 	{
-		// The Start/Stop key was pressed -> load the semaphore
+		// The StartStop key was pressed -> load the semaphore
 		xSemaphoreGiveFromISR(SemStartStop,NULL);
 		// take other Semaphore to avoid multiple push button inputs
 		xSemaphoreTakeFromISR(SemReset,NULL);
 	}
-	else if( key== 2)
+	else if( key== BCONF_REST_PBNO)
 	{
 		// The Reset key was pressed
 		xSemaphoreGiveFromISR(SemReset,NULL);
