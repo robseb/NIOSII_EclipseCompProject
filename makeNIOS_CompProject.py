@@ -24,8 +24,12 @@
 #
 # (2020-06-06) Vers.1.02
 #   Windows 10 Quartus 19.1 with WSL support
+#
+# (2020-08-28) Vers.1.03
+#   socfpgaHAL support for accessing Hard-IP with the NIOS II  
 
-version = "1.02"
+
+version = "1.03"
 
 import os
 import sys
@@ -70,11 +74,12 @@ import distutils.file_util
 #
 #
 #   
-GITNAME          = "NIOSII_EclipseCompProject"
-GIT_SCRIPT_URL   = "https://github.com/robseb/NIOSII_EclipseCompProject"
+GITNAME            = "NIOSII_EclipseCompProject"
+GIT_SCRIPT_URL     = "https://github.com/robseb/NIOSII_EclipseCompProject"
 
-GIT_FREERTOS_URL = "https://github.com/FreeRTOS/FreeRTOS-Kernel.git"
-GIT_HWLIB_URL    = "https://github.com/robseb/hwlib.git"
+GIT_FREERTOS_URL   = "https://github.com/FreeRTOS/FreeRTOS-Kernel.git"
+GIT_HWLIB_URL      = "https://github.com/robseb/hwlib.git"
+GIT_SOCFPGAHAL_URL = "https://github.com/robseb/socfpgaHAL.git"
 
 
 QURTUS_DEF_FOLDER       = "intelFPGA"
@@ -103,6 +108,7 @@ DEMO_NAME_FREERTOSC = 'freertos_c1'
 class glob:
     TCL_Header_include_path_list = []
     hwlib_selection =0 # 1: add hwlib, 2: do not add 
+    socfpgaHAL_selection =0
     customFolderName = []
     selectedTragedDevice= 0 # 1: CY5/A5, 2: A10
 
@@ -400,7 +406,7 @@ def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
              '                                                              \\n \n' + \
              ' ------------------------------------------------------------ \\n \n' + \
              '          by Robin Sebastian (https://github.com/robseb)      \\n \n' + \
-             '          Student [support me for project continuation]\\n \n' + \
+             '          Contact: git@robseb.de\\n \n' + \
              '      Vers.: '+version+' Generation: '+str(datetime.now())+'  \\n \n' + \
              '                                                              \\n \n' + \
              ' ------------------------------------------------------------\\n \n' + \
@@ -408,6 +414,8 @@ def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
              '                              - FreeRTOS -latest             \\n \n'
     if(glob.hwlib_selection==1):
         details=details+'                              - hwlib -18.1             \\n \n'
+    if(glob.socfpgaHAL_selection==1):
+        details=details+'                              - socfpgaHAL             \\n \n'
     
     if len(glob.customFolderName)>0:
         for FolderName in glob.customFolderName:
@@ -435,8 +443,10 @@ def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
 		       '        <os_spec name="FreeRTOS">           \n'
     if(glob.hwlib_selection==1):
 	    xml_str=xml_str+'            <sw_component name="Intel hwlib" id="hwlib"/> \n'
+    if(glob.socfpgaHAL_selection==1):
+	    xml_str=xml_str+'            <sw_component name="robseb socfpgaHAL" id="socfpgaHAL"/> \n'
     if len(glob.customFolderName)>0:
-        for FolderName in glob.customFolderName:
+        for FolderName in glob.customFolderName:    
             xml_str=xml_str+'            <sw_component name="'+FolderName+'" id="'+FolderName+'"/> \n'
     
     xml_str=xml_str+'        </os_spec>                          \n'+\
@@ -455,11 +465,15 @@ def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
     # add FreeRTOS + hwlib 
     if(glob.hwlib_selection==1) and len(glob.customFolderName)==0:
         xml_str=xml_str+'         nios2-bsp-args="--cmd enable_sw_package hwlib">  \n'
+    if(glob.socfpgaHAL_selection==1) and len(glob.customFolderName)==0:
+        xml_str=xml_str+'         nios2-bsp-args="--cmd enable_sw_package socfpgaHAL">  \n'
     # add FreeRTOS + user components 
     if len(glob.customFolderName)>0:
+        if(glob.socfpgaHAL_selection==1):
+            xml_str=xml_str+'         nios2-bsp-args="--cmd enable_sw_package socfpgaHAL">  \n'
         if(glob.hwlib_selection==1):
             xml_str=xml_str+'         nios2-bsp-args="--cmd enable_sw_package hwlib'
-        else:
+        if(glob.hwlib_selection!=1) and (glob.socfpgaHAL_selection!=1):
             xml_str=xml_str+'         nios2-bsp-args="'
         for FolderName in glob.customFolderName:
             xml_str=xml_str+' --cmd enable_sw_package '+FolderName
@@ -519,6 +533,7 @@ if __name__ == '__main__':
     print("#                    WITH CUSTOM COMPONENTS,OS AND HAL,...                   #")
     print('#                                                                            #')
     print("#               by Robin Sebastian (https://github.com/robseb)               #")
+    print('#                  Contact: git@robseb.de                                    #')
     print("#                            Vers.: "+version+"                                   #")
     print('#                                                                            #')
     print('##############################################################################\n\n')
@@ -625,14 +640,31 @@ if __name__ == '__main__':
     ############################################  Inputs and user selection ############################################ 
     projectName= "working_folder"
     print('\n--> Working Folder Name: %s \n' % (projectName))
-
+    '''
     # hwlib required ? 
-    glob.hwlib_selection = selection_menu('Intel hwlib for using the peripheral HPS components ','of the Cyclone and Arria SoC-FPGA with the NIOS II','Install the hwlib','Do not pre-install the hwlib') +1
+    glob.hwlib_selection = selection_menu('Intel hwlib for using the peripheral HPS components ','of the Cyclone and Arria SoC-FPGA with the NIOS II',\
+        'Install the hwlib','Do not pre-install the hwlib') +1
 
     glob.selectedTragedDevice= 0# 1: CY5/A5, 2: A10
     if(glob.hwlib_selection ==1):
         # Select the target device
+        glob.selectedTragedDevice = selection_menu('Select the Intel SoC-FPGA Family',\
+            '','Intel Cyclone V- or Arria V SoC-FPGA','Intel Arria 10 SoC-FPGA') +1
+    '''
+       
+    # socfpgaHAL required ? 
+    glob.socfpgaHAL_selection = selection_menu('Install the socfpgaHAL for accessing the peripheral hard-IP HPS components ',\
+        'of a Cyclone SoC-FPGA with the NIOS II Core?','Install the socfpgaHAL','Do not pre-install the socfpgaHAL') +1
+
+    glob.selectedTragedDevice= 0# 1: CY5/A5, 2: A10
+    
+    if(glob.socfpgaHAL_selection ==1):
+        # Select the target device
         glob.selectedTragedDevice = selection_menu('Select the Intel SoC-FPGA Family','','Intel Cyclone V- or Arria V SoC-FPGA','Intel Arria 10 SoC-FPGA') +1
+    
+    if glob.selectedTragedDevice ==2:
+        print('Error: The selected device is in this version not supported!')
+        sys.exit()
   
     print('=====================>>> Starting the generation... <<<==================== \n')
     ################################################ Create Project Folder ###########################################
@@ -757,6 +789,41 @@ if __name__ == '__main__':
         else:
             print('    looks okay')
 
+
+    ################################################ Clone the latest socfpgaHAL Version ###############################
+    if glob.socfpgaHAL_selection == 1:
+        if(os.path.isdir(projectName+SPLM[SPno]+"socfpgaHAL")):
+            print('--> socfpgaHAL Version is already available')
+            if sys.platform =='linux':
+                print('       Pull it from Github')
+                g = git.cmd.Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL')
+                g.pull()
+        else:
+            print('--> Cloning the latest socfpgaHAL Version ('+GIT_SOCFPGAHAL_URL+')\n')
+            print('       please wait...')
+            if sys.platform =='linux':
+                try:
+                    git.Repo.clone_from(GIT_SOCFPGAHAL_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL', 
+                    branch='master', progress=CloneProgress())
+                except Exception as ex:
+                    print('ERROR: The cloning failed! Error Msg.:'+str(ex))
+                    sys.exit()
+            else:
+                dload.git_clone(GIT_SOCFPGAHAL_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
+
+                if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL-master')):
+                    os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL')
+
+    ########################################### Check if the socfpgaHAL format is okay ################################
+    if glob.hwlib_selection == 1:
+        print('--> Check if the folders inside socfpgaHAL look okay')
+        if(not (os.path.isdir(projectName+SPLM[SPno]+"socfpgaHAL"))):
+            print('ERROR: The downloaded socfpgaHAL Folder is not in a valid format!')
+            sys.exit()
+        else:
+            print('    looks okay')
+
+
     ############################# Allow the user to add custom code to the project  ###############################
     print('\n###############################################################################')
     print('#                                                                              #')
@@ -780,7 +847,8 @@ if __name__ == '__main__':
     
     print('\n--> Detect added custom folders')
     for comFolders in os.listdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]):
-        if(not(comFolders == 'hwlib') and (not(comFolders == 'FreeRTOS-Kernel'))):
+        if(not(comFolders == 'hwlib') and (not(comFolders == 'FreeRTOS-Kernel')) \
+             and (not(comFolders == 'socfpgaHAL'))):
             print('     Folder: '+comFolders)
             glob.customFolderName.append(comFolders)
     if len(glob.customFolderName) <=0:
@@ -898,6 +966,29 @@ if __name__ == '__main__':
             print(str(ex))
             sys.exit()
 
+    if glob.socfpgaHAL_selection == 1:
+        # 2. Step: Copy the socfpgaHAL to the component folder
+        if(os.path.isdir(Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL')):
+            print('--> Remove old component folder: socfpgaHAL')
+            try:
+                shutil.rmtree(Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL')
+            except Exception as ex:
+                print('ERROR: Failed to remove the old socfpgaHAL Quartus Component folder!')
+                print('Msg: '+str(ex))
+                sys.exit()
+
+        print('--> Generate socfpgaHAL code file structure and')
+        print('    Copy the socfpgaHAL to the Quartus Component folder')
+
+        try:
+            copy_git_windows_friendly(os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'socfpgaHAL',os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'socfpgaHALNIOS'+SPLM[SPno],
+                                os.getcwd()+SPLM[SPno]+projectName+SPLM[SPno]+'top'+SPLM[SPno],Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL')
+
+        except Exception as ex:
+            print('Error during hwlib data processing')
+            print(str(ex))
+            sys.exit()
+
     # 3. Step: Copy the custom user folders
     if len(glob.customFolderName)>0:
         print('\n--> Generate  component TCL script for custom user files')
@@ -966,6 +1057,53 @@ if __name__ == '__main__':
             f.write(tcl_hwlib_str)
 
         print('   Generatation of TCL component TCL script for hwlib done')
+
+
+    if glob.socfpgaHAL_selection == 1:
+        # ==================================== SOCFPGAHAL TCL SCRIPT ====================================
+        # 1.Step: Create TCL component file for 'socfpgaHAL'
+        print('\n--> Generate TCL component TCL script for socfpgaHAL')
+        tcl_socfpgahal_str = ''
+
+        # 1.a: Create file header for Component files 
+        tcl_socfpgahal_str+= generate_tcl_file_header_package('socfpgaHAL_sw.tcl','socfpgaHAL',str(highestVer),'socfpgaHAL')
+
+        # 1.b: Add files to import to the TCL script
+        try:
+            tcl_socfpgahal_str+= generate_tcl_file_sources(Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL','socfpgaHAL')
+        except Exception as ex:
+            print('ERROR: Failed to generate the socfpgaHAL TCL script file!')
+            print('Msg: '+str(ex))
+            sys.exit()
+
+        # 1.c: Link hwlib together with HAN and FreeRTOS and copy the code
+        tcl_socfpgahal_str+='\n\n' +\
+        '# Support only FreeRTOS and the robseb socfpgaHAL\n' + \
+        'add_sw_property supported_bsp_type FreeRTOS \n' +\
+        'add_sw_property supported_bsp_type socfpgaHAL \n'
+
+        # 1.d: Choose the selected target device 
+        tcl_socfpgahal_str=tcl_socfpgahal_str+'\n\n' +\
+        '# \n' + \
+        '# General settings\n' + \
+        '#\n'
+
+        if(glob.selectedTragedDevice==1):
+            tcl_socfpgahal_str+=generate_tcl_file_add_constBool('soc_cy_av','soc_cy_av',True,'Const for socfpgaHAL to select the target SoC-FPGA device')
+        elif(glob.selectedTragedDevice==2):
+            tcl_socfpgahal_str+=generate_tcl_file_add_constBool('soc_a10','soc_a10',True,'Const for socfpgaHAL to select the target SoC-FPGA device')
+
+        tcl_socfpgahal_str+=generate_tcl_file_add_constBool('SOCFPGAHAL_MODE_NIOS','SOCFPGAHAL_MODE_NIOS',True,'Const to use the Version for the NIOS II')
+
+        # Remove the old TCL script file
+        if(os.path.isfile(Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL'+SPLM[SPno]+"socfpgaHAL_sw.tcl")):
+            os.remove(Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL'+SPLM[SPno]+"hwlib_sw.tcl")
+
+        with open(Quartus_componet_folder+SPLM[SPno]+'socfpgaHAL'+SPLM[SPno]+"socfpgaHAL_sw.tcl","a") as f:
+            f.write(tcl_socfpgahal_str)
+
+        print('   Generatation of TCL component TCL script for socfpgaHAL done')
+
 
     # ==================================== FREERTOS TCL SCRIPT ===================================
     print('\n--> Generate TCL component TCL script for the FreeRTOS Kernel')
@@ -1166,8 +1304,6 @@ if __name__ == '__main__':
        print('ERROR: Failed to start the Intel NIOS II Command Shell! '+ str(ex))
        sys.exit()
 
-
-    
 ############################################################ Goodby screen  ###################################################
     print('\n################################################################################')
     print('#                                                                              #')
@@ -1192,6 +1328,7 @@ if __name__ == '__main__':
     print('#                                                                              #')
     print('#                            ROBIN SEBASTIAN                                   #')
     print('#                     (https://github.com/robseb/)                             #')
+    print('#                        Contact: git@robseb.de                                #')
     print('#                                                                              #')
     print('#    NIOSII_EclipseCompProject and rsYocto are projects, that I have fully     #')
     print('#        developed on my own. No companies are involved in these projects.     #')
