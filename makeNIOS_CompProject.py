@@ -27,9 +27,12 @@
 #
 # (2020-08-28) Vers.1.03
 #   socfpgaHAL support for accessing Hard-IP with the NIOS II  
+#
+# (2020-09-13) Vers.1.04
+#   Adding socfpgaHAL Demo project
+#
 
-
-version = "1.03"
+version = "1.04"
 
 import os
 import sys
@@ -92,6 +95,7 @@ NIOS_CMD_SHEL = ['nios2_command_shell.sh','Nios II Command Shell.bat']
 
 
 DEMO_NAME_FREERTOSC = 'freertos_c1'
+DEMO_NAME_SOCFPGAHALC = 'freertos_socfpgaHAL_c1'
 
 #
 #
@@ -1212,7 +1216,7 @@ if __name__ == '__main__':
 
     ################################################## Generate Demo project Files #################################################
 
-    print('\n --> Copy Demo files to the Quartus Example folder')
+    print('\n --> Copy the default FreeRTOS Demo files to the Quartus Example folder')
 
 
     if(os.path.isdir(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)):
@@ -1225,7 +1229,8 @@ if __name__ == '__main__':
             sys.exit()
 
     try:
-        distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+'Demos'+SPLM[SPno]+DEMO_NAME_FREERTOSC,Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)
+        distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+'Demos'+SPLM[SPno]+DEMO_NAME_FREERTOSC,\
+            Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC)
     except Exception as ex:
         print('Error during Example Project folder data processing')
         print(str(ex))
@@ -1234,9 +1239,11 @@ if __name__ == '__main__':
 
     ################################################ Generate XML Demo project File ################################################
 
-    print('--> Generate XML Demo project template File')
+    print('--> Generate XML Demo project template File for the default FreeRTOS Demo')
 
-    xml_file = generate_xml_template_file('FreeRTOS - robseb',DEMO_NAME_FREERTOSC,'freertos_robseb','freertos','FreeRTOS Demo with hwlib')
+    xml_file = generate_xml_template_file('FreeRTOS - robseb',DEMO_NAME_FREERTOSC,\
+        'freertos_robseb','freertos','FreeRTOS Demo with hwlib')
+
 
     # Remove the old TCL script file
     if(os.path.isfile(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_FREERTOSC+SPLM[SPno]+"template.xml")):
@@ -1246,7 +1253,41 @@ if __name__ == '__main__':
         f.write(xml_file)
 
 
-      ############################################ NIOS II-Commnad Shell: Execute TCL Scripts ####################################
+    # Generate a socfpgaHAL demo project
+    if glob.socfpgaHAL_selection == 1:
+
+        print('\n --> Copy the socfpgaHAL Demo files to the Quartus Example folder')
+
+        if(os.path.isdir(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC)):
+            print('--> Remove old component folder: '+DEMO_NAME_SOCFPGAHALC)
+            try:
+                shutil.rmtree(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC)
+            except Exception as ex:
+                print('ERROR: Failed to remove the old'+DEMO_NAME_SOCFPGAHALC+' Quartus Example folder!')
+                print('Msg: '+str(ex))
+                sys.exit()
+
+        try:
+            distutils.dir_util.copy_tree(os.getcwd()+SPLM[SPno]+'Demos'+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC,\
+                Quartus_example_folder+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC)
+        except Exception as ex:
+            print('Error during Example Project folder data processing')
+            print(str(ex))
+            sys.exit()
+
+        print('--> Generate XML Demo project template File for the default socfpgaHAL Demo')
+        xml_file = generate_xml_template_file('FreeRTOS+socfpgaHAL-robseb',DEMO_NAME_SOCFPGAHALC,\
+            'socfpgahal_freertos_robseb','freertos',\
+                'socfpgaHAL demo with FreeRTOS\n to demostrate the FPGA-to-HPS bridge with a NIOS II processor')
+
+        # Remove the old TCL script file
+        if(os.path.isfile(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC+SPLM[SPno]+"template.xml")):
+            os.remove(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC+SPLM[SPno]+"template.xml")
+
+        with open(Quartus_example_folder+SPLM[SPno]+DEMO_NAME_SOCFPGAHALC+SPLM[SPno]+"template.xml","a") as f:
+            f.write(xml_file)
+
+    ############################################ NIOS II-Commnad Shell: Execute TCL Scripts ####################################
     print('--> Open the Intel NIOS II Command Shell\n')
 
     try:
