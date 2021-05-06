@@ -224,7 +224,7 @@ To use this script to generate a custom Eclipse project for the NIOS II soft-cor
 * II.3.: **Install a *Python Pip* module to clone Github repositories by running the following command**
     * **Windows 10**
         ````shell
-        pip3 install dload
+        pip3 install GitPython==3.0.4 gitdb2==2.0.6
         ````
     * **Ubuntu & CentOS**
         ````shell

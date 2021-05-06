@@ -31,6 +31,11 @@
 # (2020-09-13) Vers.1.04
 #   Adding socfpgaHAL Demo project
 #
+# (2021-05-06) Vers.1.05
+#   Bug fix to re-enable function with script
+#     GIT Repo Branch of FreeRTOS changed
+#     GitPython will be used for Linux and Windows 
+#
 
 version = "1.04"
 
@@ -40,28 +45,20 @@ import time
 from datetime import datetime
 import io
 
-if sys.platform =='linux':
-    try:
-        import git
-        from git import RemoteProgress
-
-
-    except ImportError as ex:
-        print('Msg: '+str(ex))
-        print('This Python Application requirers "git"')
-        print('Use following pip command to install it:')
-        print('==> pip3 install GitPython')
-        sys.exit()
-else:
-    try:
-        import dload
-
-    except ImportError as ex:
-        print('Msg: '+str(ex))
-        print('This Python Application requirers "dload"')
-        print('Use following pip command to install it:')
-        print('==> pip3 install dload')
-        sys.exit()
+# Import a Python Pip Package to allow to clone git repos
+try:
+    from git import RemoteProgress
+    from git import Git,Repo
+    
+except ImportError as ex:
+    print('Msg: '+str(ex))
+    print('This Python Application requirers "git"')
+    print('Use following pip command to install it:')
+    if sys.platform =='linux':
+        print('==>$ pip3 install GitPython')
+    else:
+        print('==>$ pip install GitPython==3.0.4 gitdb2==2.0.6')
+    sys.exit()
 
 import subprocess
 import shutil
@@ -69,6 +66,16 @@ from subprocess import Popen, PIPE
 import stat
 import distutils.dir_util
 import distutils.file_util 
+
+# @brief to show process bar during github clone
+#        feature only for Linux supported 
+#
+class CloneProgress(RemoteProgress):
+    def update(self, op_code, cur_count, max_count=None, message=''):
+        if message:
+            sys.stdout.write("\033[F")
+            print("    "+message)
+
 
 #
 #
@@ -124,16 +131,8 @@ class glob:
 #
 #
 
-if sys.platform =='linux':
-    # @brief to show process bar during github clone
-    #
-    #
 
-    class CloneProgress(RemoteProgress):
-        def update(self, op_code, cur_count, max_count=None, message=''):
-            if message:
-                sys.stdout.write("\033[F")
-                print("    "+message)
+
 
 # @brief Copy cloned Github repository over a local temp folder to a final 
 #        destination to remove write restricted files 
@@ -681,29 +680,24 @@ if __name__ == '__main__':
 
     if(os.path.isdir(projectName+SPLM[SPno]+"FreeRTOS-Kernel")):
         print('--> FreeRTOS Version is already available')
-
-        if sys.platform =='linux':
-            print('       Pull it from Github')
-            g = git.cmd.Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
-            g.pull()
+        print('       Pull it from Github')
+        g = Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
+        g.pull()
         
     else:
-        print('--> Cloning the latest FreeRTOS Kernel Version ('+GIT_FREERTOS_URL+')\n')
+        print('--> Cloning the latest FreeRTOS Kernel Version ('+GIT_FREERTOS_URL+')')
         print('       please wait...')
 
-        if sys.platform =='linux':
-            try:
-                git.Repo.clone_from(GIT_FREERTOS_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel', 
-                branch='master', progress=CloneProgress())
-            except Exception as ex:
-                print('ERROR: The cloning failed! Error Msg.:'+str(ex))
-                sys.exit()
-        else:
-            if( dload.git_clone(GIT_FREERTOS_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]) == 'Invalid clone_dir'):
-                print('ERROR: The downloaded FreeRTOS Folder is not in a valid format!')
-                sys.exit()
-            if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master')):
-                os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
+        try:
+            Repo.clone_from(GIT_FREERTOS_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel', 
+            branch='main', progress=CloneProgress())
+            
+        except Exception as ex:
+            print('ERROR: The cloning failed! Error Msg.:'+str(ex))
+            sys.exit()
+
+        if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master')):
+            os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'FreeRTOS-Kernel')
     	
 
     ########################################### Check if the FreeRTOS format is okay ################################
@@ -764,25 +758,22 @@ if __name__ == '__main__':
     if glob.hwlib_selection == 1:
         if(os.path.isdir(projectName+SPLM[SPno]+"hwlib")):
             print('--> hwlib Version is already available')
-            if sys.platform =='linux':
-                print('       Pull it from Github')
-                g = git.cmd.Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
-                g.pull()
+            print('       Pull it from Github')
+            g = Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
+            g.pull()
         else:
             print('--> Cloning the latest hwlib Version ('+GIT_HWLIB_URL+')\n')
             print('       please wait...')
-            if sys.platform =='linux':
-                try:
-                    git.Repo.clone_from(GIT_HWLIB_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib', 
-                    branch='master', progress=CloneProgress())
-                except Exception as ex:
-                    print('ERROR: The cloning failed! Error Msg.:'+str(ex))
-                    sys.exit()
-            else:
-                dload.git_clone(GIT_HWLIB_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
-
-                if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master')):
-                    os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
+            try:
+                Repo.clone_from(GIT_HWLIB_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib', 
+                branch='master', progress=CloneProgress())
+                
+            except Exception as ex:
+                print('ERROR: The cloning failed! Error Msg.:'+str(ex))
+                sys.exit()
+           
+            if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master')):
+                os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'hwlib')
 
     ########################################### Check if the hwlib format is okay ################################
     if glob.hwlib_selection == 1:
@@ -798,25 +789,22 @@ if __name__ == '__main__':
     if glob.socfpgaHAL_selection == 1:
         if(os.path.isdir(projectName+SPLM[SPno]+"socfpgaHAL")):
             print('--> socfpgaHAL Version is already available')
-            if sys.platform =='linux':
-                print('       Pull it from Github')
-                g = git.cmd.Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL')
-                g.pull()
+            print('       Pull it from Github')
+            g = Git(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL')
+            g.pull()
         else:
             print('--> Cloning the latest socfpgaHAL Version ('+GIT_SOCFPGAHAL_URL+')\n')
             print('       please wait...')
-            if sys.platform =='linux':
-                try:
-                    git.Repo.clone_from(GIT_SOCFPGAHAL_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL', 
-                    branch='master', progress=CloneProgress())
-                except Exception as ex:
-                    print('ERROR: The cloning failed! Error Msg.:'+str(ex))
-                    sys.exit()
-            else:
-                dload.git_clone(GIT_SOCFPGAHAL_URL, os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno])
 
-                if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL-master')):
-                    os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL')
+            try:
+                Repo.clone_from(GIT_SOCFPGAHAL_URL,os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL', 
+                branch='master', progress=CloneProgress())
+            except Exception as ex:
+                print('ERROR: The cloning failed! Error Msg.:'+str(ex))
+                sys.exit()
+            
+            if(os.path.isdir(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL-master')):
+                 os.rename(os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL-master',os.getcwd()+SPLM[SPno]+ projectName+SPLM[SPno]+'socfpgaHAL')
 
     ########################################### Check if the socfpgaHAL format is okay ################################
     if glob.hwlib_selection == 1:
