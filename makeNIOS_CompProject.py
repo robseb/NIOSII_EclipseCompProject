@@ -36,8 +36,11 @@
 #     GIT Repo Branch of FreeRTOS changed
 #     GitPython will be used for Linux and Windows 
 #
+# (2021-05-07) Vers.1.051
+#   Fixing a Bug with the wrong XML template file generation
+#
 
-version = "1.04"
+version = "1.051"
 
 import os
 import sys
@@ -403,7 +406,7 @@ def generate_tcl_file_add_constBool(SysName,ValueName,Value,Description):
 #
 def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
 
-    details ='                                      ---  rsYocto ---              \\n \n' + \
+    details ='                               ---  rsyocto build system---              \\n \n' + \
              '     AUTOMATIC GENERATED ECLIPSE FOR NIOS II PROJECT         \\n \n' + \
              '('+GIT_SCRIPT_URL+')\\n \n' + \
              '                                                              \\n \n' + \
@@ -464,7 +467,7 @@ def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
     if len(glob.customFolderName)==0 and  glob.hwlib_selection==2:
 	    xml_str=xml_str+'        type="'+TypeName+'">                \n'
     else:
-        xml_str=xml_str+'        type="'+TypeName+'"                \n'
+        xml_str=xml_str+'        type="'+TypeName+'">                \n'
     # add FreeRTOS + hwlib 
     if(glob.hwlib_selection==1) and len(glob.customFolderName)==0:
         xml_str=xml_str+'         nios2-bsp-args="--cmd enable_sw_package hwlib">  \n'
@@ -480,7 +483,7 @@ def generate_xml_template_file(DemoName,AppName,BSPname,TypeName,DemoDesc):
             xml_str=xml_str+'         nios2-bsp-args="'
         for FolderName in glob.customFolderName:
             xml_str=xml_str+' --cmd enable_sw_package '+FolderName
-        xml_str=xml_str+' ">\n'
+            xml_str=xml_str+' ">\n'
             
     xml_str=xml_str+'  </bsp>                                    \n'+\
                ' </create-this>                             \n'+\
