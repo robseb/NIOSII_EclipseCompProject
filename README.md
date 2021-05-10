@@ -136,7 +136,7 @@ The following step-by-step guide show how to install the necessary Intel Quartus
         * Install *Python pip* and *git* by executing following Linux command
         ````shell
         sudo apt update
-        sudo apt install python3-pip git
+        sudo apt install python3-pip git libtinfo5
         ````
     * **CentOS**
          * Install *Python3* with *Python pip* and *git* by executing following Linux command
