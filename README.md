@@ -213,6 +213,13 @@ The following step-by-step guide show how to install the necessary Intel Quartus
             * **Replace** the file in the folder with the new one by merging them together 
             * The folder should now look like:
                 ![Alt text](doc/Screenshoot_ContentFolder.png?raw=true "Screenshot of the folder content")
+* 1.7.: **(*Ubuntu 20.04*) Installment additional components for Eclipse NIOSII debugging**
+        ```shell
+        wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libncurses5-dev_6.2-0ubuntu2_amd64.deb
+        sudo apt install ./libncurses5-dev_6.2-0ubuntu2_amd64.deb
+        cd /lib/x86_64-linux-gnu && sudo ln -s libncursesw.so.6 libncursesw.so.5
+        ```
+
 </details>
 
 <br>
