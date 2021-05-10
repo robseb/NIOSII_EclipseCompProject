@@ -344,7 +344,7 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
                     for deep in depthListAbs[:]:
                         tempC = tempC+1
                         for l in deep:
-                            if not l is listOfProgressedFolders:
+                            if not l in listOfProgressedFolders:
                                 len2goBack = tempC
                                 Folder2find = l
                                 break
@@ -357,7 +357,8 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
                     Folder2find = Folder2find.replace(folderSourceAbs,'')
 
                     pathsuffix = Folder2find
-                    listOfProgressedFolders.append(pathsuffix)
+                    # listOfProgressedFolders.append(pathsuffix)
+                    listOfProgressedFolders.append(folderSourceAbs+pathsuffix)
                     print('    <<<<---- '+pathsuffix)
                 
                 # Go a single level back 
@@ -377,6 +378,11 @@ def generate_tcl_file_sources(folderSourceAbs,MainFolder):
     '#                      \n'+ \
     '## Include paths       \n'+ \
     '#                      \n'
+
+    '''
+    if not 'include' in glob.TCL_Header_include_path_list:
+        glob.TCL_Header_include_path_list.append('include')
+    '''
 
     for incl in glob.TCL_Header_include_path_list:
         print('   Add include path: '+incl)
